@@ -1,0 +1,262 @@
+// Shop Management by Nexoryos — Milk Khata PWA
+// Multi-tenant immutable ledger schema.
+// All financial/delivery records are append-only; corrections = reversal + new entry.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// A dairy business (tenant). Multiple dudh-walas use the same app independently.
+model Business {
+  id           String   @id @default(cuid())
+  businessName String
+  upiId        String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users      User[]
+  customers Customer[]
+  settings  Settings?
+  entries   MilkEntry[]
+  payments  Payment[]
+  vacations Vacation[]
+  rateChanges RateChange[]
+  bills     Bill[]
+  otps      OtpCode[]
+  auditLog  AuditLog[]
+  activities ActivityLog[]
+}
+
+/// Owner or staff. Owner = full control; staff = record-only.
+model User {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  phone      String
+  role       String   @default("owner") // owner | staff
+  active     Boolean  @default(true)
+  isSuper    Boolean  @default(false) // first owner is super
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  entries      MilkEntry[]
+  payments     Payment[]   // approved-by
+  rateChanges  RateChange[]
+
+  @@unique([businessId, phone])
+  @@index([phone])
+}
+
+model Customer {
+  id             String   @id @default(cuid())
+  businessId     String
+  name           String
+  phone          String
+  address        String?
+  defaultQty     Float    @default(1)
+  defaultRate    Float    @default(50)
+  active         Boolean  @default(true)
+  joinedDate     DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  business   Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  entries    MilkEntry[]
+  payments   Payment[]
+  vacations  Vacation[]
+  rateChanges RateChange[]
+  bills      Bill[]
+
+  @@unique([businessId, phone])
+  @@index([businessId])
+}
+
+/// Append-only delivery record. Reversed entries stay visible (struck-through).
+model MilkEntry {
+  id               String   @id @default(cuid())
+  businessId       String
+  customerId       String
+  enteredById      String
+  date             String   // YYYY-MM-DD (IST day boundary at 04:00)
+  shift            String   // morning | evening
+  qtyLiters        Float
+  product          String   // milk | chhas | paneer | curd | ghee | custom | not_taken
+  ratePerUnit      Float    // locked at entry time
+  amount           Float    // qty * rate
+  status           String   @default("active") // active | reversed
+  reversedByEntryId String? // links to the reversal entry
+  reversalReason   String?
+  enteredBy        String   // snapshot name
+  enteredByRole    String
+  offline          Boolean  @default(false)
+  clientUuid       String?  // for offline dedup
+  createdAt        DateTime @default(now())
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  enteredByUser User @relation(fields: [enteredById], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, customerId, date, shift, product, status])
+  @@index([businessId, date])
+  @@index([customerId, date])
+}
+
+model Vacation {
+  id         String   @id @default(cuid())
+  businessId String
+  customerId String
+  fromDate   String   // YYYY-MM-DD
+  toDate     String
+  status     String   @default("approved") // approved (owner-set) | requested (by customer) | rejected
+  createdBy  String?
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+}
+
+/// Rate changes are forward-only from effective_from. Old entries keep locked rate.
+model RateChange {
+  id            String   @id @default(cuid())
+  businessId    String
+  customerId    String?  // null = global
+  product       String
+  newRate       Float
+  effectiveFrom String   // YYYY-MM-DD
+  changedById   String
+  changedBy     String
+  createdAt     DateTime @default(now())
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer  Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  changedByUser User @relation(fields: [changedById], references: [id], onDelete: Cascade)
+
+  @@index([businessId, product])
+}
+
+/// Payment with audit. approvedBy snapshot is permanent (immutable audit).
+model Payment {
+  id              String   @id @default(cuid())
+  businessId      String
+  customerId      String
+  amount          Float
+  method          String   // cash | upi | online
+  note            String?
+  proofPhotoUrl   String?
+  approvedById    String
+  approvedByName  String   // immutable snapshot
+  approvedByPhone String?
+  approvedAt      DateTime @default(now())
+  billId          String?
+  status          String   @default("active") // active | reversed
+  reversalReason  String?
+  offline         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  approvedBy User  @relation(fields: [approvedById], references: [id], onDelete: Cascade)
+  bill      Bill?    @relation(fields: [billId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, approvedAt])
+  @@index([customerId])
+}
+
+model Bill {
+  id            String   @id @default(cuid())
+  businessId    String
+  customerId    String
+  billMonth     String   // YYYY-MM
+  totalLiters   Float
+  totalAmount   Float
+  paidAmount    Float    @default(0)
+  status        String   @default("generated") // draft | generated | shared | paid | partial
+  roundingRule  String?
+  version       Int      @default(1)
+  createdAt     DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([businessId, billMonth])
+  @@index([customerId])
+}
+
+model Settings {
+  id              String   @id @default(cuid())
+  businessId      String   @unique
+  billingCycleDay Int      @default(1)
+  graceDays       Int      @default(10)
+  roundingRule    String   @default("none") // none | round_off | cash_discount_5
+  dayBoundaryHour Int      @default(4) // milk after midnight → previous day
+  whatsappReminders String @default("before_due,on_due,after_grace")
+  defaultLang     String   @default("gu")
+  upiId           String?
+  products        String   @default("milk,chhas,paneer,curd,ghee")
+  reminderTemplateGu String?
+  reminderTemplateEn String?
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+/// OTP storage. Rate-limited, expires in 5 min.
+model OtpCode {
+  id         String   @id @default(cuid())
+  businessId String
+  phone      String
+  code       String
+  expiresAt  DateTime
+  consumed    Boolean  @default(false)
+  attempts    Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, phone])
+}
+
+/// Immutable audit trail — every mutation logs here.
+model AuditLog {
+  id         String   @id @default(cuid())
+  businessId String
+  actorId    String?
+  actorName  String
+  actorRole  String
+  action     String
+  entityType String
+  entityId   String?
+  metadata   String?
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, createdAt])
+}
+
+/// Activity feed for customer & owner (e.g. "Payment approved by Raju", "Bill generated", "Vacation approved").
+model ActivityLog {
+  id         String   @id @default(cuid())
+  businessId String
+  customerId String?
+  userId      String?
+  type       String
+  title      String
+  body       String?
+  readStatus Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, customerId])
+  @@index([userId])
+}

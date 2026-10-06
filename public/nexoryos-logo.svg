@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nexoryos logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B7A4B"/>
+      <stop offset="100%" stop-color="#085E3A"/>
+    </linearGradient>
+    <linearGradient id="nstroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#D7F0E1"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <path d="M348 366V146H308L192 286V146H164V366H204L320 226V366H348Z" fill="url(#nstroke)"/>
+  <!-- milk drop accent -->
+  <path d="M384 178c0 22-14 38-30 38s-30-16-30-38c0-12 6-22 12-30 6-8 14-18 18-22 4 4 12 14 18 22 6 8 12 18 12 30z"
+        fill="#FFFFFF" opacity="0.95"/>
+  <ellipse cx="362" cy="170" rx="4" ry="6" fill="#085E3A" opacity="0.5"/>
+</svg>

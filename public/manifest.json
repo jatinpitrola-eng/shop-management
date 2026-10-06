@@ -1,0 +1,58 @@
+{
+  "name": "Shop Management",
+  "short_name": "ShopMgmt",
+  "description": "Shop Management by Nexoryos — Digital milk khata for Indian dairy owners. Auto month-end bill, payment proof with owner name, immutable audit trail.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F6F8F7",
+  "theme_color": "#0B7A4B",
+  "lang": "gu-IN",
+  "dir": "ltr",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Today's milk entries"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Today's Entries",
+      "short_name": "Today",
+      "url": "/?view=today",
+      "description": "Add morning/evening milk entries"
+    },
+    {
+      "name": "Payments",
+      "short_name": "Payments",
+      "url": "/?view=payments",
+      "description": "Pending payments & approval log"
+    }
+  ]
+}
