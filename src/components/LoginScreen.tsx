@@ -6,6 +6,7 @@ import { t, LANG_LABELS, type Lang } from '@/lib/i18n';
 import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
 import { RealisticDairyBackground } from './RealisticDairyBackground';
+import { VideoLikeBackground } from './VideoLikeBackground';
 import { RealCow } from './RealCow';
 import { MilkButton } from './MilkButton';
 import { GlobalMilkSplashLayer } from './MilkSplash';
@@ -154,7 +155,7 @@ export function LoginScreen() {
         overflow: 'hidden',
       }}
     >
-      <RealisticDairyBackground variant="cream" density={4} />
+      <VideoLikeBackground density={0.8} />
       <GlobalMilkSplashLayer />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>

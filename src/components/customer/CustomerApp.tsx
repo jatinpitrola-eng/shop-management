@@ -7,6 +7,7 @@ import { FooterCredit } from '../FooterCredit';
 import { OfflineBanner } from '../OfflineBanner';
 import { Toasts } from '../Toasts';
 import { RealisticDairyBackground } from '../RealisticDairyBackground';
+import { VideoLikeBackground } from '../VideoLikeBackground';
 import { DynamicTheme } from '../DynamicTheme';
 import { GlobalMilkSplashLayer } from '../MilkSplash';
 import { PageTransition } from '../PageTransition';
@@ -38,7 +39,7 @@ export function CustomerApp() {
       position: 'relative',
     }}>
       <DynamicTheme businessId={session?.bid} />
-      <RealisticDairyBackground variant="cream" density={3} />
+      <VideoLikeBackground density={0.5} />
       <GlobalMilkSplashLayer />
 
       {/* Header — glass */}

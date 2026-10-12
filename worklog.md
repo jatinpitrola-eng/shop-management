@@ -346,3 +346,42 @@ Lint: `bun run lint` — 0 errors, 0 warnings (clean)
 Test logins (unchanged):
 - Owner: +91 98765 43210 OTP 123456
 - Customer: patel@demo.com / 1234
+
+---
+Task ID: 7
+Agent: main (parent)
+Task: FULL ANIMATION VIDEO background — canvas-based particle system that runs continuously across the WHOLE screen
+
+Work Log:
+- Built VideoLikeBackground.tsx — canvas-based full-screen particle animation system:
+  * Canvas fills the entire screen (position: fixed, inset: 0)
+  * 300+ particles across 3 depth layers (back/slow, mid, front/fast)
+  * 4 particle types: 'flow' (wave motion), 'rise' (steam/mist going up), 'drip' (milk drops falling), 'sparkle' (twinkling gold)
+  * Particle colors: milk white, cream, butter gold, forest green (varied)
+  * Particles respawn when expired/out of bounds (infinite loop)
+  * Continuous 'milk river' wave at bottom with sine wave motion
+  * Periodic splash bursts at random positions (every 1.5-4.5s) with radial particles
+  * Walking cow silhouette crosses the screen every 8-25s (with animated legs)
+  * Soft radial highlights (cream + gold) for atmosphere
+  * DPR-aware (sharp on retina, capped at 2x for perf)
+  * Semi-transparent fill on each frame creates 'motion trail' effect
+  * Smooth 60fps animation via requestAnimationFrame
+- Wired VideoLikeBackground across:
+  * IntroScreen (density 1.2 — extra rich for hero impression)
+  * LoginScreen (density 0.8 — moderate)
+  * OwnerApp shell (density 0.7 — moderate)
+  * CustomerApp shell (density 0.5 — lighter for perf on cheaper phones)
+- Replaced RealisticDairyBackground (static image) with VideoLikeBackground (animated canvas) on all main screens
+
+Verification (agent-browser end-to-end):
+- Intro: canvas at 1280x577 rendering 300+ particles flowing + dripping + rising + twinkling + milk river wave + splash bursts + occasional cow walking across ✓
+- Login: video background continues under phone/email tabs ✓
+- Owner Today: video background fills screen behind shift tabs + customer list ✓
+- Dashboard: video background + RealCow image on top (parallax) ✓
+- Customer app: video background continues under all customer screens ✓
+- Captured 3 different frames (v5-09, v5-10, v5-11) showing animation IS moving (different particle positions)
+- Canvas confirmed running at 1280x577 across all screens
+
+Lint: `bun run lint` — 0 errors, 0 warnings (clean)
+
+11 verification screenshots in /home/z/my-project/download/ (v5-01 through v5-11)

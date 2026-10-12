@@ -6,7 +6,7 @@ import { t } from '@/lib/i18n';
 import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
 import { RealCow } from './RealCow';
-import { RealisticDairyBackground } from './RealisticDairyBackground';
+import { VideoLikeBackground } from './VideoLikeBackground';
 
 const SLIDES = ['slide_1', 'slide_2', 'slide_3'] as const;
 const SLIDE_ICONS = ['🥛', '🧾', '✅'] as const;
@@ -60,7 +60,7 @@ export function IntroScreen() {
         overflow: 'hidden',
       }}
     >
-      <RealisticDairyBackground variant="cream" pourMilk density={6} />
+      <VideoLikeBackground density={1.2} />
 
       {/* Skip top-right */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', position: 'relative', zIndex: 2 }}>
