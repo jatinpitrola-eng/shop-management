@@ -385,3 +385,40 @@ Verification (agent-browser end-to-end):
 Lint: `bun run lint` — 0 errors, 0 warnings (clean)
 
 11 verification screenshots in /home/z/my-project/download/ (v5-01 through v5-11)
+
+---
+Task ID: 8
+Agent: main (parent)
+Task: STRIP everything — minimal fresh clean theme (no cows, no particles, no milk splash, no video bg)
+
+Work Log:
+- Rewrote globals.css with MINIMAL FRESH CLEAN theme:
+  * Off-white background (#FAFAF7), warm hint
+  * Pure white surfaces (#FFFFFF)
+  * Clean ink palette (not warm espresso): #0F0F0F ink-900, #6B6B6B ink-500
+  * Single fresh accent: #10B981 fresh green
+  * Subtle shadows only (no 4-layer 3d depth)
+  * Simple borders (#ECECEC)
+  * Removed all glass-morphism heavy blur (kept simple .glass with 12px blur)
+  * Removed all fancy animations (breathe, float-slow, ken-burns, milk-fall, sparkle, logo-pulse)
+  * Only 2 simple keyframes: slide-up (220ms) and fade-in (300ms) with cubic-bezier(.4, 0, .2, 1)
+  * Removed all .motion-spring bouncy classes, kept simple .motion-fast (180ms) and .motion-smooth (280ms)
+- Updated layout.tsx — removed Playfair Display + Cormorant Garamond serif fonts, only Inter
+- Rewrote IntroScreen — minimal: just logo + brand + 3 slide cards (clean white cards with subtle shadow), progress dots, no cow, no animations overload
+- Rewrote LoginScreen — minimal: clean inputs, simple tabs (Phone+OTP / Email), no cow, no milk splash, no GlobalMilkSplashLayer
+- Rewrote OwnerApp — clean header (white surface, simple border), no glass-strong heavy blur, no video background, no GlobalMilkSplashLayer, no PageTransition, simple bottom nav with 2px brand underline
+- Rewrote customer/CustomerApp — same minimal clean shell
+- Updated OwnerTodayScreen — removed RealCow (size 84) + motion.button milk splash + framer-motion entirely; [1L]/[0.5L] buttons are now simple clean-btn with cubic-bezier transition
+- Updated OwnerDashboardScreen — removed RealCow hero (size 160); stat cards now use .clean-card (clean white card with subtle shadow), no gradient containers
+
+Verification (agent-browser end-to-end):
+- Intro: minimal, just logo + 3 slides + dots — NO cow, NO particles, NO video bg ✓
+- Login: clean inputs, simple tabs, no cow ✓
+- Owner Today: clean header, no cow top-right, simple [1L]/[0.5L] buttons (no splash, just clean entry add) ✓
+- Tap [1L] on Anita Ben → entry added (1/6 delivered), Undo toast appears (no milk splash burst) ✓
+- Dashboard: clean stat cards (no cow hero) ✓
+- Customer app (patel@demo.com/1234): clean minimal theme ✓
+
+Lint: `bun run lint` — 0 errors, 0 warnings (clean)
+
+7 verification screenshots in /home/z/my-project/download/ (v6-01 through v6-07)

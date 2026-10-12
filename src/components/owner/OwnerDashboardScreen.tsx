@@ -5,7 +5,6 @@ import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { formatINR, currentMonth } from '@/lib/dates';
 import { FooterCredit } from '../FooterCredit';
-import { RealCow } from '../RealCow';
 
 interface DashboardResp {
   thisMonth: { amount: number; liters: number; paid: number };
@@ -58,15 +57,8 @@ export function OwnerDashboardScreen() {
 
   return (
     <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, minHeight: '100%' }}>
-      {/* Hero mascot */}
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
-        <RealCow size={160} parallax />
-      </div>
-
-      {/* Top stat cards — wrapped in a gradient container for the "wow" feel */}
-      <div style={{
-        background: 'linear-gradient(135deg, var(--brand-tint), rgba(255,224,138,0.15))',
-        borderRadius: 16,
+      {/* Top stat cards */}
+      <div className="clean-card" style={{
         padding: 16,
         display: 'flex',
         flexDirection: 'column',

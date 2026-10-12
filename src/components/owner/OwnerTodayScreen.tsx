@@ -1,12 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { istDate, formatINR } from '@/lib/dates';
 import { v4 as uuidv4 } from 'uuid';
-import { RealCow } from '../RealCow';
-import { triggerMilkSplash } from '../MilkSplash';
 
 interface Entry {
   id: string;
@@ -210,26 +207,10 @@ export function OwnerTodayScreen() {
   const totalCustomers = customers.length;
 
   return (
-    <div style={{ padding: '14px', position: 'relative' }}>
-      {/* Real cow on the right — soft parallax, breathing */}
-      <div style={{ position: 'absolute', top: 10, right: 14, opacity: 0.95, pointerEvents: 'none', zIndex: 2 }}>
-        <RealCow size={84} parallax={false} />
-      </div>
-      {/* Extra milk drop floating around the cow */}
-      <motion.div
-        initial={{ y: 0, opacity: 0 }}
-        animate={{ y: [0, 20, 0], opacity: [0, 1, 0] }}
-        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ position: 'absolute', top: 8, right: 42, pointerEvents: 'none' }}
-      >
-        <svg width="12" height="16" viewBox="0 0 14 18" fill="none" aria-hidden="true">
-          <path d="M7 0c3 5 5 7 5 11a5 5 0 0 1-10 0c0-4 2-6 5-11z" fill="#FFFFFF" stroke="#0B7A4B" strokeWidth="0.8" />
-        </svg>
-      </motion.div>
-
+    <div style={{ padding: '14px' }}>
       {/* Date header */}
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--ink-900)' }}>{dayName}</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink-900)' }}>{dayName}</div>
         <div style={{ fontSize: 12, color: 'var(--ink-500)' }}>
           {t(lang, 'delivered_count', { done: String(totalDelivered), total: String(totalCustomers) })}
         </div>
@@ -358,33 +339,26 @@ export function OwnerTodayScreen() {
                   )}
                 </div>
 
-                {/* Quick actions — ONE TAP each, ≥48px targets with milk splash */}
+                {/* Quick actions — ONE TAP each, ≥48px targets */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr 1fr', gap: 6 }}>
-                  <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                    onClick={(e) => { triggerMilkSplash(e.clientX, e.clientY); addEntry(c, 1); }}
-                    className="clean-btn"
+                  <button
+                    onClick={() => addEntry(c, 1)}
+                    className="clean-btn motion-fast"
                     style={{
-                      background: 'var(--gradient-brand)', color: '#fff', border: 'none',
+                      background: 'var(--brand-600)', color: '#fff', border: 'none',
                       fontWeight: 700, fontSize: 14,
-                      boxShadow: '0 4px 12px rgba(11,122,75,0.28), inset 0 1px 0 rgba(255,255,255,0.30)',
                     }}
                     aria-label={`Add 1 liter for ${c.name}`}
-                  >1L</motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                    onClick={(e) => { triggerMilkSplash(e.clientX, e.clientY); addEntry(c, 0.5); }}
-                    className="clean-btn"
+                  >1L</button>
+                  <button
+                    onClick={() => addEntry(c, 0.5)}
+                    className="clean-btn motion-fast"
                     style={{
                       background: 'var(--brand-tint)', color: 'var(--brand-700)',
-                      border: '1px solid rgba(11,122,75,0.18)',
+                      border: '1px solid var(--border)',
                       fontWeight: 700, fontSize: 14,
                     }}
-                  >0.5L</motion.button>
+                  >0.5L</button>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <input
                       type="number"

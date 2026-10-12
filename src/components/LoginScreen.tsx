@@ -1,15 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/lib/store';
 import { t, LANG_LABELS, type Lang } from '@/lib/i18n';
 import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
-import { RealisticDairyBackground } from './RealisticDairyBackground';
-import { VideoLikeBackground } from './VideoLikeBackground';
-import { RealCow } from './RealCow';
-import { MilkButton } from './MilkButton';
-import { GlobalMilkSplashLayer } from './MilkSplash';
 
 type Mode = 'phone' | 'email';
 
@@ -148,161 +142,131 @@ export function LoginScreen() {
     <div
       style={{
         minHeight: '100vh',
-        position: 'relative',
+        background: 'var(--bg)',
         display: 'flex',
         flexDirection: 'column',
-        padding: '28px 24px',
-        overflow: 'hidden',
+        padding: '24px 20px',
       }}
     >
-      <VideoLikeBackground density={0.8} />
-      <GlobalMilkSplashLayer />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <RealCow size={64} parallax={false} />
-        </motion.div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <LangSwitcher lang={lang} setLang={setLang} />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28, maxWidth: 400, margin: '0 auto', width: '100%', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-          <motion.div
-            initial={{ scale: 0.92, opacity: 0, y: -10 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <NexoryosLogo size={80} />
-          </motion.div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 24, maxWidth: 360, margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <NexoryosLogo size={72} />
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--ink-900)', letterSpacing: '-0.025em', fontFamily: 'Playfair Display, Georgia, serif' }}>
-              {t(lang, 'app_name')}
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--ink-500)', opacity: 0.7, marginTop: 4, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-              {t(lang, 'by_nexoryos')}
-            </div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--ink-900)', letterSpacing: '-0.02em' }}>{t(lang, 'app_name')}</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 2 }}>{t(lang, 'by_nexoryos')}</div>
           </div>
         </div>
 
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--ink-900)', marginBottom: 4, fontFamily: 'Playfair Display, Georgia, serif' }}>
-            {t(lang, 'login_title')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-500)', fontStyle: 'italic', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            {mode === 'phone' ? t(lang, 'login_subtitle') : (lang === 'gu' ? 'કસ્ટમર ઇમેઇલ + પાસવર્ડ' : lang === 'hi' ? 'ग्राहक इमेइल + पासवर्ड' : 'Customer email + password')}
-          </div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink-900)', marginBottom: 4 }}>{t(lang, 'login_title')}</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-500)' }}>{t(lang, 'login_subtitle')}</div>
         </div>
 
         {/* Mode tabs */}
-        <div className="glass" style={{ display: 'flex', gap: 4, padding: 4, borderRadius: 14 }}>
+        <div style={{ display: 'flex', gap: 4, background: 'var(--muted)', padding: 4, borderRadius: 10 }}>
           <button
             onClick={() => { setMode('phone'); setStep('phone'); setCode(''); }}
+            className="motion-fast"
             style={{
-              flex: 1, padding: '12px', borderRadius: 10, border: 'none',
+              flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none',
               background: mode === 'phone' ? 'var(--surface)' : 'transparent',
               color: mode === 'phone' ? 'var(--brand-700)' : 'var(--ink-500)',
               fontWeight: 600, fontSize: 13, cursor: 'pointer', minHeight: 40,
               boxShadow: mode === 'phone' ? 'var(--shadow-sm)' : 'none',
-              transition: 'all 300ms cubic-bezier(.4, 0, .2, 1)',
-              fontFamily: 'var(--font-inter)',
             }}
           >
             📱 {lang === 'gu' ? 'ફોન + OTP' : lang === 'hi' ? 'फोन + OTP' : 'Phone + OTP'}
           </button>
           <button
             onClick={() => { setMode('email'); setStep('email'); }}
+            className="motion-fast"
             style={{
-              flex: 1, padding: '12px', borderRadius: 10, border: 'none',
+              flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none',
               background: mode === 'email' ? 'var(--surface)' : 'transparent',
               color: mode === 'email' ? 'var(--brand-700)' : 'var(--ink-500)',
               fontWeight: 600, fontSize: 13, cursor: 'pointer', minHeight: 40,
               boxShadow: mode === 'email' ? 'var(--shadow-sm)' : 'none',
-              transition: 'all 300ms cubic-bezier(.4, 0, .2, 1)',
-              fontFamily: 'var(--font-inter)',
             }}
           >
             ✉️ {lang === 'gu' ? 'ઇમેઇલ' : lang === 'hi' ? 'इमेइल' : 'Email'}
           </button>
         </div>
 
-        <AnimatePresence mode="wait">
-          {mode === 'phone' && step === 'phone' && (
-            <motion.div
-              key="phone-step"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+        {mode === 'phone' && step === 'phone' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <input type="tel" inputMode="numeric" placeholder={t(lang, 'phone_placeholder')} value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} className="motion-fast" />
+            <input type="text" placeholder={t(lang, 'name')} value={name} onChange={e => setName(e.target.value)} style={inputStyle} className="motion-fast" />
+            <button
+              disabled={loading || !phone}
+              onClick={requestOtp}
+              className="clean-btn motion-fast"
+              style={{ background: 'var(--brand-600)', color: '#fff', border: 'none' }}
             >
-              <input type="tel" inputMode="numeric" placeholder={t(lang, 'phone_placeholder')} value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
-              <input type="text" placeholder={t(lang, 'name')} value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
-              <MilkButton onClick={requestOtp} disabled={loading || !phone} style={{ width: '100%', fontSize: 15 }}>
-                {loading ? '...' : t(lang, 'send_otp')}
-              </MilkButton>
-              <MilkButton variant="ghost" onClick={quickDemo} splash={false} style={{ width: '100%' }}>
-                🚀 Demo Login (Raju — Owner)
-              </MilkButton>
-              <div style={{ fontSize: 11, color: 'var(--ink-500)', textAlign: 'center', marginTop: 6, fontStyle: 'italic', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-                {lang === 'gu' ? 'કસ્ટમર: +91 98765 43220 (Patel Bhai)' : 'Customer: +91 98765 43220 (Patel Bhai)'}
-              </div>
-            </motion.div>
-          )}
+              {loading ? '...' : t(lang, 'send_otp')}
+            </button>
+            <button onClick={quickDemo} className="clean-btn motion-fast" style={{ background: 'transparent', color: 'var(--brand-600)', border: '1px solid var(--brand-600)' }}>
+              🚀 Demo Login (Raju — Owner)
+            </button>
+            <div style={{ fontSize: 11, color: 'var(--ink-500)', textAlign: 'center', marginTop: 4 }}>
+              {lang === 'gu' ? 'કસ્ટમર: +91 98765 43220 (Patel Bhai)' : 'Customer: +91 98765 43220 (Patel Bhai)'}
+            </div>
+          </div>
+        )}
 
-          {mode === 'phone' && step === 'otp' && (
-            <motion.div
-              key="otp-step"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+        {mode === 'phone' && step === 'otp' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {devHint && (
+              <div style={{ background: 'var(--brand-tint)', color: 'var(--brand-700)', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontWeight: 500, textAlign: 'center' }}>
+                {devHint}
+              </div>
+            )}
+            <input type="tel" inputMode="numeric" maxLength={6} placeholder={t(lang, 'otp_placeholder')} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ''))} style={{ ...inputStyle, letterSpacing: 8, textAlign: 'center' }} className="motion-fast" />
+            <button
+              disabled={loading || code.length !== 6}
+              onClick={verify}
+              className="clean-btn motion-fast"
+              style={{ background: 'var(--brand-600)', color: '#fff', border: 'none' }}
             >
-              {devHint && (
-                <div style={{ background: 'var(--brand-tint)', color: 'var(--brand-700)', padding: '12px 14px', borderRadius: 12, fontSize: 13, fontWeight: 500, textAlign: 'center', border: '1px solid rgba(15,81,50,0.18)' }}>
-                  {devHint}
-                </div>
-              )}
-              <input type="tel" inputMode="numeric" maxLength={6} placeholder={t(lang, 'otp_placeholder')} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ''))} style={{ ...inputStyle, letterSpacing: 8, textAlign: 'center' }} />
-              <MilkButton onClick={verify} disabled={loading || code.length !== 6} style={{ width: '100%', fontSize: 15 }}>
-                {loading ? '...' : t(lang, 'verify_otp')}
-              </MilkButton>
-              <MilkButton variant="ghost" onClick={requestOtp} disabled={resendIn > 0} splash={false} style={{ width: '100%' }}>
-                {resendIn > 0 ? t(lang, 'resend_in', { s: String(resendIn) }) : t(lang, 'resend_otp')}
-              </MilkButton>
-              <button onClick={() => { setStep('phone'); setCode(''); }} style={{ background: 'transparent', color: 'var(--ink-500)', border: 'none', fontSize: 12, cursor: 'pointer', minHeight: 36, fontStyle: 'italic', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-                ← {lang === 'gu' ? 'ફોન બદલો' : 'Change phone'}
-              </button>
-            </motion.div>
-          )}
+              {loading ? '...' : t(lang, 'verify_otp')}
+            </button>
+            <button
+              disabled={resendIn > 0}
+              onClick={requestOtp}
+              className="clean-btn motion-fast"
+              style={{ background: 'transparent', color: 'var(--brand-600)', border: '1px solid var(--brand-600)' }}
+            >
+              {resendIn > 0 ? t(lang, 'resend_in', { s: String(resendIn) }) : t(lang, 'resend_otp')}
+            </button>
+            <button onClick={() => { setStep('phone'); setCode(''); }} className="clean-btn motion-fast" style={{ background: 'transparent', color: 'var(--ink-500)', border: '1px solid var(--border)' }}>
+              ← {lang === 'gu' ? 'ફોન બદલો' : 'Change phone'}
+            </button>
+          </div>
+        )}
 
-          {mode === 'email' && (
-            <motion.div
-              key="email-step"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+        {mode === 'email' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ background: 'var(--brand-tint)', color: 'var(--brand-700)', padding: '10px 12px', borderRadius: 10, fontSize: 12, fontWeight: 500, textAlign: 'center' }}>
+              🔒 {lang === 'gu' ? 'માલિક તમને આપેલ ઇમેઇલ + પાસવર્ડ વાપરો' : lang === 'hi' ? 'मालिक द्वारा दिया गया इमेइल + पासवर्ड उपयोग करें' : 'Use the email + password your dairy owner gave you'}
+            </div>
+            <input type="email" inputMode="email" placeholder={lang === 'gu' ? 'ઇમેઇલ' : 'Email'} value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} className="motion-fast" />
+            <input type="password" placeholder={lang === 'gu' ? 'પાસવર્ડ' : 'Password'} value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} className="motion-fast" />
+            <button
+              disabled={loading}
+              onClick={emailLogin}
+              className="clean-btn motion-fast"
+              style={{ background: 'var(--brand-600)', color: '#fff', border: 'none' }}
             >
-              <div style={{ background: 'var(--brand-tint)', color: 'var(--brand-700)', padding: '12px 14px', borderRadius: 12, fontSize: 12, fontWeight: 500, textAlign: 'center', border: '1px solid rgba(15,81,50,0.18)' }}>
-                🔒 {lang === 'gu' ? 'માલિક તમને આપેલ ઇમેઇલ + પાસવર્ડ વાપરો' : lang === 'hi' ? 'मालिक द्वारा दिया गया इमेइल + पासवर्ड उपयोग करें' : 'Use the email + password your dairy owner gave you'}
-              </div>
-              <input type="email" inputMode="email" placeholder={lang === 'gu' ? 'ઇમેઇલ' : 'Email'} value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
-              <input type="password" placeholder={lang === 'gu' ? 'પાસવર્ડ' : 'Password'} value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
-              <MilkButton onClick={emailLogin} disabled={loading} style={{ width: '100%', fontSize: 15 }}>
-                {loading ? '...' : (lang === 'gu' ? 'લોગિન' : 'Login')}
-              </MilkButton>
-              <div style={{ fontSize: 11, color: 'var(--ink-500)', textAlign: 'center', marginTop: 4, fontStyle: 'italic', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-                Demo: <code style={{ background: 'var(--muted)', padding: '2px 6px', borderRadius: 4 }}>patel@demo.com</code> / <code style={{ background: 'var(--muted)', padding: '2px 6px', borderRadius: 4 }}>1234</code>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {loading ? '...' : (lang === 'gu' ? 'લોગિન' : 'Login')}
+            </button>
+            <div style={{ fontSize: 11, color: 'var(--ink-500)', textAlign: 'center', marginTop: 4 }}>
+              Demo: <code style={{ background: 'var(--muted)', padding: '2px 6px', borderRadius: 4 }}>patel@demo.com</code> / <code style={{ background: 'var(--muted)', padding: '2px 6px', borderRadius: 4 }}>1234</code>
+            </div>
+          </div>
+        )}
       </div>
 
       <FooterCredit />
@@ -311,29 +275,27 @@ export function LoginScreen() {
 }
 
 const inputStyle: React.CSSProperties = {
-  padding: '14px 18px',
-  background: 'rgba(255, 252, 246, 0.92)',
-  backdropFilter: 'blur(12px)',
-  WebkitBackdropFilter: 'blur(12px)',
+  padding: '14px 16px',
+  background: 'var(--surface)',
   border: '1px solid var(--border)',
-  borderRadius: 14,
+  borderRadius: 10,
   fontSize: 16,
   color: 'var(--ink-900)',
   width: '100%',
   outline: 'none',
-  boxShadow: 'inset 0 1px 2px rgba(31,26,18,0.04), 0 1px 0 rgba(255,255,255,0.6)',
 };
 
 export function LangSwitcher({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
   const langs: Lang[] = ['gu', 'hi', 'en'];
   return (
-    <div className="glass scroll-x" style={{ display: 'flex', gap: 4, padding: 4, borderRadius: 12, border: '1px solid rgba(255,255,255,0.4)' }}>
+    <div className="scroll-x" style={{ display: 'flex', gap: 4, padding: 4, background: 'var(--surface)', borderRadius: 10, border: '1px solid var(--border)' }}>
       {langs.map(l => (
         <button
           key={l}
           onClick={() => setLang(l)}
+          className="motion-fast"
           style={{
-            padding: '6px 12px',
+            padding: '6px 10px',
             borderRadius: 8,
             background: lang === l ? 'var(--brand-tint)' : 'transparent',
             color: lang === l ? 'var(--brand-700)' : 'var(--ink-500)',
@@ -342,8 +304,6 @@ export function LangSwitcher({ lang, setLang }: { lang: Lang; setLang: (l: Lang)
             fontWeight: 500,
             cursor: 'pointer',
             minHeight: 28,
-            transition: 'all 300ms cubic-bezier(.4, 0, .2, 1)',
-            fontFamily: 'var(--font-inter)',
           }}
         >
           {LANG_LABELS[l].native}
