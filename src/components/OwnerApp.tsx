@@ -1,4 +1,4 @@
-// Owner app shell — sticky bottom nav (Today / Customers / Khata / Payments / Dashboard / Settings / Reports)
+// Owner app shell — premium 3D theme with glass-morphism, page transitions, milk splash
 'use client';
 import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
@@ -6,8 +6,10 @@ import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
 import { OfflineBanner } from './OfflineBanner';
 import { Toasts } from './Toasts';
-import { DairyBackground } from './DairyBackground';
+import { DairyBackground3D } from './DairyBackground3D';
 import { DynamicTheme } from './DynamicTheme';
+import { GlobalMilkSplashLayer } from './MilkSplash';
+import { PageTransition } from './PageTransition';
 import { OwnerTodayScreen } from './owner/OwnerTodayScreen';
 import { OwnerCustomersScreen } from './owner/OwnerCustomersScreen';
 import { OwnerKhataScreen } from './owner/OwnerKhataScreen';
@@ -22,12 +24,6 @@ export function OwnerApp() {
   const setView = useApp(s => s.setView);
   const lang = useApp(s => s.lang);
   const session = useApp(s => s.session);
-
-  // Apply dynamic branding from business
-  const businessId = session?.bid || undefined;
-  if (businessId) {
-    // Render DynamicTheme inline to apply theme before paint
-  }
 
   const tabs: { id: typeof view; icon: string; label: string }[] = [
     { id: 'owner_today', icon: '📅', label: t(lang, 'today') },
@@ -45,49 +41,51 @@ export function OwnerApp() {
     <div
       style={{
         minHeight: '100vh',
-        background: 'var(--bg)',
+        background: 'var(--gradient-cream)',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
       }}
     >
-      <DynamicTheme businessId={businessId} />
-      <DairyBackground density={6} />
+      <DynamicTheme businessId={session?.bid} />
+      <DairyBackground3D density={5} variant="cream" />
+      <GlobalMilkSplashLayer />
 
-      {/* Top header */}
+      {/* Top header — glass */}
       <header
+        className="glass-strong"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 30,
-          background: 'rgba(255,255,255,0.92)',
-          backdropFilter: 'blur(8px)',
-          borderBottom: '1px solid var(--border)',
-          padding: '10px 14px',
-          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)',
+          borderBottom: '1px solid rgba(255,255,255,0.5)',
+          padding: '12px 16px',
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 10,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <NexoryosLogo size={28} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <NexoryosLogo size={32} />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink-900)', lineHeight: 1.1 }}>{t(lang, 'app_name')}</div>
-            <div style={{ fontSize: 10, color: 'var(--ink-500)', opacity: 0.7 }}>{t(lang, 'by_nexoryos')}</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink-900)', lineHeight: 1.1, letterSpacing: '-0.01em' }}>{t(lang, 'app_name')}</div>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', opacity: 0.7, letterSpacing: '0.06em' }}>{t(lang, 'by_nexoryos')}</div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
           <span style={{ color: 'var(--ink-500)' }}>{session?.name}</span>
           <span style={{
-            padding: '2px 8px',
+            padding: '3px 10px',
             background: session?.role === 'owner' ? 'var(--brand-tint)' : 'var(--amber-tint)',
             color: session?.role === 'owner' ? 'var(--brand-700)' : 'var(--amber)',
-            borderRadius: 8,
-            fontSize: 11,
-            fontWeight: 600,
+            borderRadius: 10,
+            fontSize: 10,
+            fontWeight: 700,
             textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            border: session?.role === 'owner' ? '1px solid rgba(11,122,75,0.18)' : '1px solid rgba(245,166,35,0.22)',
           }}>
             {session?.role}
           </span>
@@ -97,35 +95,36 @@ export function OwnerApp() {
       <OfflineBanner />
 
       <main style={{ flex: 1, paddingBottom: 80, position: 'relative', zIndex: 1 }}>
-        {view === 'owner_today' && <OwnerTodayScreen />}
-        {view === 'owner_customers' && <OwnerCustomersScreen />}
-        {view === 'owner_customer_detail' && <OwnerCustomerDetail />}
-        {view === 'owner_khata' && <OwnerKhataScreen />}
-        {view === 'owner_payments' && <OwnerPaymentsScreen />}
-        {view === 'owner_dashboard' && <OwnerDashboardScreen />}
-        {view === 'owner_settings' && <OwnerSettingsScreen />}
-        {view === 'owner_reports' && <OwnerReportsScreen />}
+        <PageTransition viewKey={view}>
+          {view === 'owner_today' && <OwnerTodayScreen />}
+          {view === 'owner_customers' && <OwnerCustomersScreen />}
+          {view === 'owner_customer_detail' && <OwnerCustomerDetail />}
+          {view === 'owner_khata' && <OwnerKhataScreen />}
+          {view === 'owner_payments' && <OwnerPaymentsScreen />}
+          {view === 'owner_dashboard' && <OwnerDashboardScreen />}
+          {view === 'owner_settings' && <OwnerSettingsScreen />}
+          {view === 'owner_reports' && <OwnerReportsScreen />}
+        </PageTransition>
       </main>
 
       <FooterCredit />
 
       <Toasts />
 
-      {/* Bottom nav */}
+      {/* Bottom nav — glass with subtle bounce on active */}
       <nav
-        className="sticky-bottom"
+        className="glass-strong"
         style={{
           display: 'flex',
-          borderTop: '1px solid var(--border)',
-          background: 'rgba(255,255,255,0.95)',
-          backdropFilter: 'blur(8px)',
+          borderTop: '1px solid rgba(255,255,255,0.5)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
         {[...tabs, ...tabs2].map(tb => (
           <button
             key={tb.id}
             onClick={() => setView(tb.id as any)}
-            className="motion-fast"
+            className="motion-spring"
             style={{
               flex: 1,
               display: 'flex',
@@ -136,14 +135,15 @@ export function OwnerApp() {
               background: view === tb.id ? 'var(--brand-tint)' : 'transparent',
               color: view === tb.id ? 'var(--brand-700)' : 'var(--ink-500)',
               border: 'none',
-              borderBottom: view === tb.id ? '2px solid var(--brand-600)' : '2px solid transparent',
+              borderBottom: view === tb.id ? '3px solid var(--brand-600)' : '3px solid transparent',
               fontSize: 10,
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: 'pointer',
-              minHeight: 56,
+              minHeight: 58,
+              transform: view === tb.id ? 'translateY(-2px)' : 'translateY(0)',
             }}
           >
-            <span style={{ fontSize: 18 }}>{tb.icon}</span>
+            <span style={{ fontSize: 20, transform: view === tb.id ? 'scale(1.1)' : 'scale(1)', transition: 'transform 250ms cubic-bezier(.34,1.56,.64,1)' }}>{tb.icon}</span>
             <span style={{ fontSize: 10 }}>{tb.label}</span>
           </button>
         ))}

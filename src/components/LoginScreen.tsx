@@ -5,8 +5,10 @@ import { useApp } from '@/lib/store';
 import { t, LANG_LABELS, type Lang } from '@/lib/i18n';
 import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
-import { DairyBackground } from './DairyBackground';
-import { CuteCow } from './CuteCow';
+import { DairyBackground3D } from './DairyBackground3D';
+import { Cow3D } from './Cow3D';
+import { MilkButton } from './MilkButton';
+import { GlobalMilkSplashLayer } from './MilkSplash';
 
 type Mode = 'phone' | 'email';
 
@@ -106,7 +108,6 @@ export function LoginScreen() {
     }
   };
 
-  // Customer email + password login
   const emailLogin = async () => {
     if (!email || !password) {
       pushToast({ text: lang === 'gu' ? 'ઇમેઇલ અને પાસવર્ડ દાખલ કરો' : lang === 'hi' ? 'इमेइल और पासवर्ड डालें' : 'Enter email and password' });
@@ -146,68 +147,73 @@ export function LoginScreen() {
     <div
       style={{
         minHeight: '100vh',
-        background:
-          'linear-gradient(180deg, #F6F8F7 0%, #EAF5EE 60%, #F6F8F7 100%)',
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         padding: '24px 20px',
-        position: 'relative',
         overflow: 'hidden',
       }}
     >
-      <DairyBackground density={8} />
+      <DairyBackground3D density={6} variant="cream" />
+      <GlobalMilkSplashLayer />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <CuteCow size={48} />
-        </div>
+        <motion.div
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+        >
+          <Cow3D size={56} parallax={false} sparkles={false} milkDrop />
+        </motion.div>
         <LangSwitcher lang={lang} setLang={setLang} />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22, maxWidth: 380, margin: '0 auto', width: '100%', position: 'relative', zIndex: 2 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 24, maxWidth: 380, margin: '0 auto', width: '100%', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <motion.div
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            initial={{ scale: 0.85, opacity: 0, y: -10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
           >
-            <NexoryosLogo size={72} />
+            <NexoryosLogo size={76} />
           </motion.div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink-900)' }}>{t(lang, 'app_name')}</div>
-            <div style={{ fontSize: 11, color: 'var(--ink-500)', opacity: 0.7, marginTop: 2 }}>{t(lang, 'by_nexoryos')}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--ink-900)', letterSpacing: '-0.02em' }}>{t(lang, 'app_name')}</div>
+            <div style={{ fontSize: 12, color: 'var(--ink-500)', opacity: 0.7, marginTop: 2, letterSpacing: '0.06em' }}>{t(lang, 'by_nexoryos')}</div>
           </div>
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink-900)', marginBottom: 4 }}>{t(lang, 'login_title')}</div>
+          <div style={{ fontSize: 19, fontWeight: 700, color: 'var(--ink-900)', marginBottom: 4 }}>{t(lang, 'login_title')}</div>
           <div style={{ fontSize: 13, color: 'var(--ink-500)' }}>
             {mode === 'phone' ? t(lang, 'login_subtitle') : (lang === 'gu' ? 'કસ્ટમર ઇમેઇલ + પાસવર્ડ' : lang === 'hi' ? 'ग्राहक इमेइल + पासवर्ड' : 'Customer email + password')}
           </div>
         </div>
 
         {/* Mode tabs */}
-        <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(4px)', padding: 4, borderRadius: 12, border: '1px solid var(--border)' }}>
+        <div className="glass" style={{ display: 'flex', gap: 4, padding: 4, borderRadius: 14 }}>
           <button
             onClick={() => { setMode('phone'); setStep('phone'); setCode(''); }}
-            className="motion-fast"
+            className="motion-spring"
             style={{
-              flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none',
+              flex: 1, padding: '12px', borderRadius: 10, border: 'none',
               background: mode === 'phone' ? 'var(--surface)' : 'transparent',
               color: mode === 'phone' ? 'var(--brand-700)' : 'var(--ink-500)',
               fontWeight: 600, fontSize: 13, cursor: 'pointer', minHeight: 40,
+              boxShadow: mode === 'phone' ? 'var(--shadow-sm)' : 'none',
             }}
           >
             📱 {lang === 'gu' ? 'ફોન + OTP' : lang === 'hi' ? 'फोन + OTP' : 'Phone + OTP'}
           </button>
           <button
             onClick={() => { setMode('email'); setStep('email'); }}
-            className="motion-fast"
+            className="motion-spring"
             style={{
-              flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none',
+              flex: 1, padding: '12px', borderRadius: 10, border: 'none',
               background: mode === 'email' ? 'var(--surface)' : 'transparent',
               color: mode === 'email' ? 'var(--brand-700)' : 'var(--ink-500)',
               fontWeight: 600, fontSize: 13, cursor: 'pointer', minHeight: 40,
+              boxShadow: mode === 'email' ? 'var(--shadow-sm)' : 'none',
             }}
           >
             ✉️ {lang === 'gu' ? 'ઇમેઇલ' : lang === 'hi' ? 'इमेइल' : 'Email'}
@@ -221,16 +227,17 @@ export function LoginScreen() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
               style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
             >
-              <input type="tel" inputMode="numeric" placeholder={t(lang, 'phone_placeholder')} value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} className="clean-btn motion-fast" />
-              <input type="text" placeholder={t(lang, 'name')} value={name} onChange={e => setName(e.target.value)} style={inputStyle} className="clean-btn motion-fast" />
-              <button disabled={loading || !phone} onClick={requestOtp} className="clean-btn motion-fast" style={primaryBtnStyle}>
+              <input type="tel" inputMode="numeric" placeholder={t(lang, 'phone_placeholder')} value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} className="motion-fast" />
+              <input type="text" placeholder={t(lang, 'name')} value={name} onChange={e => setName(e.target.value)} style={inputStyle} className="motion-fast" />
+              <MilkButton onClick={requestOtp} disabled={loading || !phone} style={{ width: '100%', fontSize: 15 }}>
                 {loading ? '...' : t(lang, 'send_otp')}
-              </button>
-              <button onClick={quickDemo} className="clean-btn motion-fast" style={ghostBtnStyle}>
+              </MilkButton>
+              <MilkButton variant="ghost" onClick={quickDemo} splash={false} style={{ width: '100%' }}>
                 🚀 Demo Login (Raju — Owner)
-              </button>
+              </MilkButton>
               <div style={{ fontSize: 11, color: 'var(--ink-500)', textAlign: 'center', marginTop: 6 }}>
                 {lang === 'gu' ? 'કસ્ટમર: +91 98765 43220 (Patel Bhai)' : 'Customer: +91 98765 43220 (Patel Bhai)'}
               </div>
@@ -243,21 +250,22 @@ export function LoginScreen() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
               style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
             >
               {devHint && (
-                <div style={{ background: 'var(--brand-tint)', color: 'var(--brand-700)', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontWeight: 500, textAlign: 'center' }}>
+                <div className="bg-brand-tint" style={{ color: 'var(--brand-700)', padding: '12px 14px', borderRadius: 12, fontSize: 13, fontWeight: 500, textAlign: 'center', border: '1px solid rgba(11,122,75,0.18)' }}>
                   {devHint}
                 </div>
               )}
-              <input type="tel" inputMode="numeric" maxLength={6} placeholder={t(lang, 'otp_placeholder')} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ''))} style={{ ...inputStyle, letterSpacing: 8, textAlign: 'center' }} className="clean-btn motion-fast" />
-              <button disabled={loading || code.length !== 6} onClick={verify} className="clean-btn motion-fast" style={primaryBtnStyle}>
+              <input type="tel" inputMode="numeric" maxLength={6} placeholder={t(lang, 'otp_placeholder')} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ''))} style={{ ...inputStyle, letterSpacing: 8, textAlign: 'center' }} className="motion-fast" />
+              <MilkButton onClick={verify} disabled={loading || code.length !== 6} style={{ width: '100%', fontSize: 15 }}>
                 {loading ? '...' : t(lang, 'verify_otp')}
-              </button>
-              <button disabled={resendIn > 0} onClick={requestOtp} className="clean-btn motion-fast" style={ghostBtnStyle}>
+              </MilkButton>
+              <MilkButton variant="ghost" onClick={requestOtp} disabled={resendIn > 0} splash={false} style={{ width: '100%' }}>
                 {resendIn > 0 ? t(lang, 'resend_in', { s: String(resendIn) }) : t(lang, 'resend_otp')}
-              </button>
-              <button onClick={() => { setStep('phone'); setCode(''); }} className="clean-btn motion-fast" style={ghostBtnStyle}>
+              </MilkButton>
+              <button onClick={() => { setStep('phone'); setCode(''); }} className="motion-fast" style={{ background: 'transparent', color: 'var(--ink-500)', border: 'none', fontSize: 12, cursor: 'pointer', minHeight: 36 }}>
                 ← {lang === 'gu' ? 'ફોન બદલો' : 'Change phone'}
               </button>
             </motion.div>
@@ -269,16 +277,17 @@ export function LoginScreen() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
               style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
             >
-              <div style={{ background: 'var(--brand-tint)', color: 'var(--brand-700)', padding: '10px 12px', borderRadius: 10, fontSize: 12, fontWeight: 500, textAlign: 'center' }}>
+              <div className="bg-brand-tint" style={{ color: 'var(--brand-700)', padding: '12px 14px', borderRadius: 12, fontSize: 12, fontWeight: 500, textAlign: 'center', border: '1px solid rgba(11,122,75,0.18)' }}>
                 🔒 {lang === 'gu' ? 'માલિક તમને આપેલ ઇમેઇલ + પાસવર્ડ વાપરો' : lang === 'hi' ? 'मालिक द्वारा दिया गया इमेइल + पासवर्ड उपयोग करें' : 'Use the email + password your dairy owner gave you'}
               </div>
-              <input type="email" inputMode="email" placeholder={lang === 'gu' ? 'ઇમેઇલ' : 'Email'} value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} className="clean-btn motion-fast" />
-              <input type="password" placeholder={t(lang, 'name') && lang === 'gu' ? 'પાસવર્ડ' : 'Password'} value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} className="clean-btn motion-fast" />
-              <button disabled={loading} onClick={emailLogin} className="clean-btn motion-fast" style={primaryBtnStyle}>
+              <input type="email" inputMode="email" placeholder={lang === 'gu' ? 'ઇમેઇલ' : 'Email'} value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} className="motion-fast" />
+              <input type="password" placeholder={lang === 'gu' ? 'પાસવર્ડ' : 'Password'} value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} className="motion-fast" />
+              <MilkButton onClick={emailLogin} disabled={loading} style={{ width: '100%', fontSize: 15 }}>
                 {loading ? '...' : (lang === 'gu' ? 'લોગિન' : 'Login')}
-              </button>
+              </MilkButton>
               <div style={{ fontSize: 11, color: 'var(--ink-500)', textAlign: 'center', marginTop: 4 }}>
                 Demo: <code style={{ background: 'var(--muted)', padding: '2px 6px', borderRadius: 4 }}>patel@demo.com</code> / <code style={{ background: 'var(--muted)', padding: '2px 6px', borderRadius: 4 }}>1234</code>
               </div>
@@ -294,40 +303,29 @@ export function LoginScreen() {
 
 const inputStyle: React.CSSProperties = {
   padding: '14px 16px',
-  background: 'rgba(255,255,255,0.85)',
-  backdropFilter: 'blur(4px)',
+  background: 'rgba(255, 255, 255, 0.92)',
+  backdropFilter: 'blur(8px)',
+  WebkitBackdropFilter: 'blur(8px)',
   border: '1px solid var(--border)',
-  borderRadius: 12,
+  borderRadius: 14,
   fontSize: 16,
   color: 'var(--ink-900)',
   width: '100%',
   outline: 'none',
-};
-
-const primaryBtnStyle: React.CSSProperties = {
-  background: 'var(--brand-600)',
-  color: '#fff',
-  border: 'none',
-  fontWeight: 600,
-};
-
-const ghostBtnStyle: React.CSSProperties = {
-  background: 'transparent',
-  color: 'var(--brand-600)',
-  border: '1px solid var(--brand-600)',
+  boxShadow: 'inset 0 1px 2px rgba(44,62,80,0.04), 0 1px 0 rgba(255,255,255,0.6)',
 };
 
 export function LangSwitcher({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
   const langs: Lang[] = ['gu', 'hi', 'en'];
   return (
-    <div className="scroll-x" style={{ display: 'flex', gap: 4, padding: 4, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(4px)', borderRadius: 10, border: '1px solid var(--border)' }}>
+    <div className="glass scroll-x" style={{ display: 'flex', gap: 4, padding: 4, borderRadius: 12, border: '1px solid rgba(255,255,255,0.4)' }}>
       {langs.map(l => (
         <button
           key={l}
           onClick={() => setLang(l)}
-          className="motion-fast"
+          className="motion-spring"
           style={{
-            padding: '6px 10px',
+            padding: '6px 12px',
             borderRadius: 8,
             background: lang === l ? 'var(--brand-tint)' : 'transparent',
             color: lang === l ? 'var(--brand-700)' : 'var(--ink-500)',

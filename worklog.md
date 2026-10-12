@@ -194,3 +194,85 @@ Test logins:
 - Customer email+password: kishor@demo.com / 1234 (Kishor Bhai — newly added)
 
 Lint: `bun run lint` — 0 errors, 0 warnings (clean)
+
+---
+Task ID: 5
+Agent: main (parent)
+Task: Premium 3D theme overhaul — 3D cow, milk splash, premium cards, page transitions
+
+Work Log:
+- Rewrote globals.css with premium 3D theme:
+  * Cream milk-themed gradient background (--gradient-cream)
+  * Warm ink palette (#2C3E50) instead of cool black
+  * Multi-layer 3D depth shadows (--shadow-card-3d, --shadow-3d)
+  * Glass-morphism utilities (.glass, .glass-strong) with backdrop-filter blur + saturate
+  * Premium card with gradient surface + top edge highlight (.premium-card)
+  * Spring motion tokens (.motion-spring = cubic-bezier(.34, 1.56, .64, 1))
+  * New animations: float-3d, milk-fall, sparkle, slide-fade with spring easing
+  * Dairy accent colors: --cream #FFF4D6, --butter #FFD166, --chocolate #6B4F2C, --pink #FFB3C1
+- Built Cow3D.tsx (THE SHOWSTOPPER):
+  * Multi-layer SVG with depth gradients (radialGradient on body/head/udder)
+  * Parallax on pointer move (rotateX/rotateY + headX/headY springs via useSpring/useTransform)
+  * Breathing motion (continuous y bob)
+  * Walking legs (4 separate animated motion.g with rotation cycling)
+  * Blinking eyes with eyelashes + sparkle in eye
+  * Swishing tail with golden tip
+  * Chewing mouth (scaleY animation)
+  * Golden horns (gradient + strokeWidth pulse)
+  * Pink udder with milk drops dripping
+  * Floating milk drop above (independent animation)
+  * 5 sparkle particles orbiting around (yellow/white, varying speed)
+- Built DairyBackground3D.tsx:
+  * Cream gradient backdrop
+  * Soft pastel radial highlights (3 stops)
+  * Pouring milk animation at top (optional, motion.path morph)
+  * Floating 3D dairy items: MilkBottle3D, CheeseWedge3D, ButterCube3D, GheeJar3D, MilkDrop3D, Leaf3D — each with gradient + drop-shadow
+  * Soft particles in 3 colors (brand, butter, white) with glow
+  * Subtle wave at bottom for depth
+- Built MilkSplash.tsx:
+  * MilkSplashHost wrapper (auto-triggers splash on click)
+  * MilkSplash burst (10 radial particles + center milk drop)
+  * triggerMilkSplash(x,y) — global function dispatching custom event
+  * GlobalMilkSplashLayer — mounted at root, listens for splash events
+- Built PremiumCard.tsx — premium card with 3D depth, hover tilt, top edge shine
+- Built MilkButton.tsx — spring physics button with milk splash on press, gradient background, top shine, whileTap scale 0.94, whileHover scale 1.02
+- Built PageTransition.tsx — spring slide between views (initial x=24 scale=0.96 → animate, exit x=-24)
+- Updated IntroScreen.tsx — uses Cow3D (size 140), DairyBackground3D with pouringMilk, glass-strong slide cards with emoji icons, animated progress dots (spring width)
+- Updated LoginScreen.tsx — Cow3D in header (size 56), glass tab switcher, MilkButton for Send OTP/Login, GlobalMilkSplashLayer mounted, glass input styling
+- Updated OwnerApp.tsx — DairyBackground3D + DynamicTheme + GlobalMilkSplashLayer, glass-strong header & bottom nav, PageTransition wrapping the active screen, active tab has translateY(-2px) + 3px brand underline, icon scale on active
+- Updated customer/CustomerApp.tsx — same premium 3D theme
+- Updated OwnerTodayScreen.tsx — floating Cow3D top-right (size 72), [1L] and [0.5L] buttons upgraded to motion.button with whileTap spring + triggerMilkSplash on click + gradient brand background + inset shine
+- Updated OwnerDashboardScreen.tsx — Cow3D hero (size 120) with parallax + sparkles + milk drop
+
+Verification (agent-browser end-to-end, fresh state):
+- Intro renders Cow3D with breathing, blinking, walking, milk drop, sparkles + DairyBackground3D with pouring milk + floating 3D dairy items ✓
+- Login screen: Cow3D in header, glass tabs (Phone+OTP / Email), MilkButton with spring + milk splash on press ✓
+- Demo Login → OTP → owner Today with floating 3D cow top-right + glass header ✓
+- Tap [1L] on Anita Ben → MILK SPLASH at click coordinates (white + cream particles) + entry added + Undo toast ✓
+- Dashboard → Cow3D hero (size 120) with parallax-on-mouse-move ✓
+- Page transitions between views (spring slide) ✓
+- Logout → Email login as patel@demo.com / 1234 → customer app with same premium 3D theme + glass header ✓
+- Customer Pay tab: UPI QR + UPI ID + "by Nexoryos" + "By Pitroda Jatin Jayeshbhai" footer ✓
+
+Lint: `bun run lint` — 0 errors, 0 warnings (clean)
+
+Files modified/created (8):
+- src/app/globals.css (premium 3D theme tokens + glass utilities + spring animations)
+- src/components/Cow3D.tsx (NEW — showstopper 3D cow)
+- src/components/DairyBackground3D.tsx (NEW — premium 3D background with pouring milk + floating 3D items + particles)
+- src/components/MilkSplash.tsx (NEW — splash burst + global splash layer + trigger function)
+- src/components/PremiumCard.tsx (NEW — 3D card with hover tilt)
+- src/components/MilkButton.tsx (NEW — spring button with milk splash on press)
+- src/components/PageTransition.tsx (NEW — spring slide between views)
+- src/components/IntroScreen.tsx (rewritten with Cow3D + DairyBackground3D + glass slide cards)
+- src/components/LoginScreen.tsx (rewritten with Cow3D + MilkButton + glass tabs)
+- src/components/OwnerApp.tsx (rewritten with glass header/nav + PageTransition + DairyBackground3D)
+- src/components/customer/CustomerApp.tsx (rewritten with same premium 3D theme)
+- src/components/owner/OwnerTodayScreen.tsx (Cow3D + MilkButton + milk splash on entry tap)
+- src/components/owner/OwnerDashboardScreen.tsx (Cow3D hero with parallax)
+
+Test logins (unchanged from v2):
+- Owner: +91 98765 43210 OTP 123456
+- Customer: patel@demo.com / 1234
+
+9 verification screenshots in /home/z/my-project/download/ (v3-01 through v3-09)

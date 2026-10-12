@@ -5,7 +5,8 @@ import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { istDate, formatINR } from '@/lib/dates';
 import { v4 as uuidv4 } from 'uuid';
-import { CuteCow } from '../CuteCow';
+import { Cow3D } from '../Cow3D';
+import { triggerMilkSplash } from '../MilkSplash';
 
 interface Entry {
   id: string;
@@ -210,9 +211,9 @@ export function OwnerTodayScreen() {
 
   return (
     <div style={{ padding: '14px', position: 'relative' }}>
-      {/* Floating cow on the right — doesn't push the layout */}
-      <div style={{ position: 'absolute', top: 12, right: 14, opacity: 0.85, pointerEvents: 'none' }}>
-        <CuteCow size={56} />
+      {/* Floating 3D cow on the right — doesn't push the layout */}
+      <div style={{ position: 'absolute', top: 12, right: 14, opacity: 0.95, pointerEvents: 'none', zIndex: 2 }}>
+        <Cow3D size={72} parallax={false} sparkles={false} milkDrop />
       </div>
       {/* Extra milk drop floating around the cow */}
       <motion.div
@@ -357,26 +358,33 @@ export function OwnerTodayScreen() {
                   )}
                 </div>
 
-                {/* Quick actions — ONE TAP each, ≥48px targets */}
+                {/* Quick actions — ONE TAP each, ≥48px targets with milk splash */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr 1fr', gap: 6 }}>
-                  <button
-                    onClick={() => addEntry(c, 1)}
-                    className="clean-btn motion-fast"
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    whileHover={{ scale: 1.03 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    onClick={(e) => { triggerMilkSplash(e.clientX, e.clientY); addEntry(c, 1); }}
+                    className="clean-btn"
                     style={{
-                      background: 'var(--brand-600)', color: '#fff', border: 'none',
+                      background: 'var(--gradient-brand)', color: '#fff', border: 'none',
                       fontWeight: 700, fontSize: 14,
+                      boxShadow: '0 4px 12px rgba(11,122,75,0.28), inset 0 1px 0 rgba(255,255,255,0.30)',
                     }}
                     aria-label={`Add 1 liter for ${c.name}`}
-                  >1L</button>
-                  <button
-                    onClick={() => addEntry(c, 0.5)}
-                    className="clean-btn motion-fast"
+                  >1L</motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    whileHover={{ scale: 1.03 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    onClick={(e) => { triggerMilkSplash(e.clientX, e.clientY); addEntry(c, 0.5); }}
+                    className="clean-btn"
                     style={{
                       background: 'var(--brand-tint)', color: 'var(--brand-700)',
                       border: '1px solid rgba(11,122,75,0.18)',
                       fontWeight: 700, fontSize: 14,
                     }}
-                  >0.5L</button>
+                  >0.5L</motion.button>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <input
                       type="number"
