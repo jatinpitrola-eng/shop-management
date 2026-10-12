@@ -6,6 +6,8 @@ import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
 import { OfflineBanner } from './OfflineBanner';
 import { Toasts } from './Toasts';
+import { DairyBackground } from './DairyBackground';
+import { DynamicTheme } from './DynamicTheme';
 import { OwnerTodayScreen } from './owner/OwnerTodayScreen';
 import { OwnerCustomersScreen } from './owner/OwnerCustomersScreen';
 import { OwnerKhataScreen } from './owner/OwnerKhataScreen';
@@ -20,6 +22,12 @@ export function OwnerApp() {
   const setView = useApp(s => s.setView);
   const lang = useApp(s => s.lang);
   const session = useApp(s => s.session);
+
+  // Apply dynamic branding from business
+  const businessId = session?.bid || undefined;
+  if (businessId) {
+    // Render DynamicTheme inline to apply theme before paint
+  }
 
   const tabs: { id: typeof view; icon: string; label: string }[] = [
     { id: 'owner_today', icon: '📅', label: t(lang, 'today') },
@@ -40,15 +48,20 @@ export function OwnerApp() {
         background: 'var(--bg)',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
+      <DynamicTheme businessId={businessId} />
+      <DairyBackground density={6} />
+
       {/* Top header */}
       <header
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 30,
-          background: 'var(--surface)',
+          background: 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(8px)',
           borderBottom: '1px solid var(--border)',
           padding: '10px 14px',
           paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)',
@@ -83,7 +96,7 @@ export function OwnerApp() {
 
       <OfflineBanner />
 
-      <main style={{ flex: 1, paddingBottom: 80 }}>
+      <main style={{ flex: 1, paddingBottom: 80, position: 'relative', zIndex: 1 }}>
         {view === 'owner_today' && <OwnerTodayScreen />}
         {view === 'owner_customers' && <OwnerCustomersScreen />}
         {view === 'owner_customer_detail' && <OwnerCustomerDetail />}
@@ -104,7 +117,8 @@ export function OwnerApp() {
         style={{
           display: 'flex',
           borderTop: '1px solid var(--border)',
-          background: 'var(--surface)',
+          background: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(8px)',
         }}
       >
         {[...tabs, ...tabs2].map(tb => (

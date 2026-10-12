@@ -17,6 +17,12 @@ model Business {
   businessName String
   upiId        String?
   phone        String?
+  // Branding (owner-configurable)
+  logoUrl      String?  // data URL or hosted URL
+  themeColor   String?  // hex like #0B7A4B — overrides default brand color
+  themeColorDark String? // darker shade for gradients
+  tagline      String?  // short business tagline shown under name
+  accentEmoji  String?  // e.g. "🐄" or "🥛"
   createdAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -60,6 +66,8 @@ model Customer {
   name           String
   phone          String
   address        String?
+  email          String?  // for email+password login
+  passwordHash   String?  // bcrypt hash
   defaultQty     Float    @default(1)
   defaultRate    Float    @default(50)
   active         Boolean  @default(true)
@@ -76,6 +84,7 @@ model Customer {
 
   @@unique([businessId, phone])
   @@index([businessId])
+  @@index([email])
 }
 
 /// Append-only delivery record. Reversed entries stay visible (struck-through).

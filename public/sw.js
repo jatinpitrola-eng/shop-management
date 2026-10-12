@@ -60,6 +60,11 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
+  // NEVER cache API routes or auth — these must always hit the network so session
+  // state is honored. Cached API responses would let logged-out users see stale data.
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
   // Skip cross-origin that's not in our allow list
   if (url.origin !== self.location.origin && url.origin !== 'https://z-cdn.chatglm.cn') {
     return;

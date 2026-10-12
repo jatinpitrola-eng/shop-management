@@ -1,8 +1,9 @@
-// Owner: add a customer (name + phone) → customer OTP login → sees their khata
+// Owner: add a customer (name + phone + email + password) → customer can install PWA + login
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession, requireOwner } from '@/lib/auth';
 import { normalizePhone } from '@/lib/dates';
+import { hashPassword } from '@/lib/auth';
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -20,6 +21,22 @@ export async function POST(req: Request) {
   const address = body?.address as string | undefined;
   const defaultQty = Number(body?.defaultQty ?? 1);
   const defaultRate = Number(body?.defaultRate ?? 50);
+  const email = (body?.email as string | undefined)?.trim().toLowerCase() || null;
+  const password = body?.password as string | undefined;
+
+  // Hash password if provided
+  let passwordHash: string | null = null;
+  if (password && password.length >= 4) {
+    passwordHash = await hashPassword(password);
+  }
+
+  // If email provided, check uniqueness within business
+  if (email) {
+    const existsEmail = await db.customer.findFirst({ where: { businessId: session.bid, email } });
+    if (existsEmail) {
+      return NextResponse.json({ error: 'EMAIL_EXISTS' }, { status: 400 });
+    }
+  }
 
   const customer = await db.customer.create({
     data: {
@@ -27,6 +44,8 @@ export async function POST(req: Request) {
       name,
       phone,
       address: address || null,
+      email,
+      passwordHash,
       defaultQty,
       defaultRate,
       active: true,
@@ -43,7 +62,7 @@ export async function POST(req: Request) {
       action: 'CUSTOMER_ADD',
       entityType: 'Customer',
       entityId: customer.id,
-      metadata: JSON.stringify({ name, phone }),
+      metadata: JSON.stringify({ name, phone, email: !!email, password: !!password }),
     },
   });
 
@@ -60,5 +79,7 @@ export async function GET() {
     where: { businessId: session.bid },
     orderBy: { name: 'asc' },
   });
-  return NextResponse.json({ customers });
+  // Don't expose passwordHash
+  const safe = customers.map(c => ({ ...c, passwordHash: c.passwordHash ? '[set]' : null }));
+  return NextResponse.json({ customers: safe });
 }

@@ -1,9 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { istDate, formatINR } from '@/lib/dates';
 import { v4 as uuidv4 } from 'uuid';
+import { CuteCow } from '../CuteCow';
 
 interface Entry {
   id: string;
@@ -207,7 +209,23 @@ export function OwnerTodayScreen() {
   const totalCustomers = customers.length;
 
   return (
-    <div style={{ padding: '14px' }}>
+    <div style={{ padding: '14px', position: 'relative' }}>
+      {/* Floating cow on the right — doesn't push the layout */}
+      <div style={{ position: 'absolute', top: 12, right: 14, opacity: 0.85, pointerEvents: 'none' }}>
+        <CuteCow size={56} />
+      </div>
+      {/* Extra milk drop floating around the cow */}
+      <motion.div
+        initial={{ y: 0, opacity: 0 }}
+        animate={{ y: [0, 20, 0], opacity: [0, 1, 0] }}
+        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'absolute', top: 8, right: 42, pointerEvents: 'none' }}
+      >
+        <svg width="12" height="16" viewBox="0 0 14 18" fill="none" aria-hidden="true">
+          <path d="M7 0c3 5 5 7 5 11a5 5 0 0 1-10 0c0-4 2-6 5-11z" fill="#FFFFFF" stroke="#0B7A4B" strokeWidth="0.8" />
+        </svg>
+      </motion.div>
+
       {/* Date header */}
       <div style={{ marginBottom: 12 }}>
         <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--ink-900)' }}>{dayName}</div>

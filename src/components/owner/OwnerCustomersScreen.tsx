@@ -10,6 +10,8 @@ interface Customer {
   id: string;
   name: string;
   phone: string;
+  email?: string | null;
+  passwordHash?: string | null;
   address?: string | null;
   defaultQty: number;
   defaultRate: number;
@@ -147,8 +149,14 @@ export function OwnerCustomersScreen() {
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {c.name} {!c.active && <span style={{ fontSize: 10, color: 'var(--ink-500)' }}>• {t(lang, 'deactivate')}</span>}
+                        {c.email && (
+                          <span title={c.email} aria-label="email enabled" style={{ fontSize: 12, marginLeft: 4 }}>✉️</span>
+                        )}
                       </div>
                       <div className="tabular" style={{ fontSize: 11, color: 'var(--ink-500)' }}>{c.phone}</div>
+                      {c.email && (
+                        <div className="tabular" style={{ fontSize: 10, color: 'var(--brand-700)', marginTop: 1 }}>{c.email}</div>
+                      )}
                     </div>
                   </div>
                   <span style={{ fontSize: 14, color: 'var(--ink-300)' }}>›</span>
@@ -195,6 +203,8 @@ function AddCustomerSheet({ onClose, onAdded }: { onClose: () => void; onAdded: 
   const pushToast = useApp(s => s.pushToast);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [address, setAddress] = useState('');
   const [qty, setQty] = useState('1');
   const [rate, setRate] = useState('50');
@@ -205,6 +215,10 @@ function AddCustomerSheet({ onClose, onAdded }: { onClose: () => void; onAdded: 
       pushToast({ text: t(lang, 't_phone_required') });
       return;
     }
+    if (password && password.length < 4) {
+      pushToast({ text: t(lang, 'error') + ' — password ≥ 4' });
+      return;
+    }
     setSaving(true);
     try {
       const res = await fetch('/api/customers', {
@@ -212,13 +226,15 @@ function AddCustomerSheet({ onClose, onAdded }: { onClose: () => void; onAdded: 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name, phone: normalizePhone(phone), address,
+          email: email.trim() || undefined,
+          password: password || undefined,
           defaultQty: parseFloat(qty) || 1,
           defaultRate: parseFloat(rate) || 50,
         }),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        pushToast({ text: d?.error || t(lang, 'error') });
+        pushToast({ text: d?.error === 'EMAIL_EXISTS' ? (lang === 'gu' ? 'ઇમેઇલ પહેલેથી વપરાયું' : 'Email already used') : (d?.error || t(lang, 'error')) });
         return;
       }
       onAdded();
@@ -252,6 +268,15 @@ function AddCustomerSheet({ onClose, onAdded }: { onClose: () => void; onAdded: 
           <Field label={t(lang, 'phone')}>
             <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" style={inputStyle} className="clean-btn motion-fast" />
           </Field>
+          <Field label={t(lang, 'email')}>
+            <input value={email} onChange={e => setEmail(e.target.value)} type="email" inputMode="email" placeholder={t(lang, 'email')} style={inputStyle} className="clean-btn motion-fast" />
+          </Field>
+          <Field label={t(lang, 'password')}>
+            <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder={t(lang, 'password')} style={inputStyle} className="clean-btn motion-fast" />
+          </Field>
+          <div style={{ fontSize: 11, color: 'var(--ink-500)', background: 'var(--brand-tint)', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(11,122,75,0.12)' }}>
+            ✉️ {t(lang, 'customer_login_helper')}
+          </div>
           <Field label={t(lang, 'address')}>
             <input value={address} onChange={e => setAddress(e.target.value)} style={inputStyle} className="clean-btn motion-fast" />
           </Field>

@@ -1,10 +1,11 @@
 // Shop Management by Nexoryos — auth helper
-// OTP-only, no passwords. Session via signed cookie.
+// OTP-only OR email+password (for customers). Session via signed cookie.
 // Dev OTP = 123456 when DEV_MODE flag is on.
 
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { db } from './db';
+import bcrypt from 'bcryptjs';
 
 const SESSION_COOKIE = 'shopm_session';
 const SESSION_DAYS = 30;
@@ -108,4 +109,18 @@ export async function verifyOtp(businessId: string, phone: string, code: string)
   }
   await db.otpCode.update({ where: { id: record.id }, data: { consumed: true } });
   return true;
+}
+
+/// Hash a password using bcrypt (10 rounds).
+export async function hashPassword(plain: string): Promise<string> {
+  return bcrypt.hash(plain, 10);
+}
+
+/// Verify a plain-text password against the stored bcrypt hash.
+export async function verifyPassword(plain: string, hash: string): Promise<boolean> {
+  try {
+    return await bcrypt.compare(plain, hash);
+  } catch {
+    return false;
+  }
 }

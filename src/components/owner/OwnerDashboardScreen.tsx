@@ -5,6 +5,7 @@ import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { formatINR, currentMonth } from '@/lib/dates';
 import { FooterCredit } from '../FooterCredit';
+import { CuteCow } from '../CuteCow';
 
 interface DashboardResp {
   thisMonth: { amount: number; liters: number; paid: number };
@@ -57,53 +58,67 @@ export function OwnerDashboardScreen() {
 
   return (
     <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, minHeight: '100%' }}>
-      {/* Top stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <div className="clean-card" style={{ padding: 14 }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'this_month')}</div>
-          <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink-900)' }}>{formatINR(thisMonth.amount)}</div>
-          <div className="tabular" style={{ fontSize: 11, color: 'var(--brand-700)', marginTop: 2 }}>{thisMonth.liters.toFixed(1)}L • {t(lang, 'paid_amount')} {formatINR(thisMonth.paid)}</div>
-        </div>
-        <div className="clean-card" style={{ padding: 14 }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'last_month')}</div>
-          <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink-700)' }}>{formatINR(lastMonth.amount)}</div>
-          <div className="tabular" style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 2 }}>{lastMonth.liters.toFixed(1)}L</div>
-        </div>
+      {/* Hero mascot */}
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
+        <CuteCow size={100} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <div className="clean-card" style={{ padding: 14 }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'delta')}</div>
-          <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: deltaPositive ? 'var(--brand-700)' : 'var(--red)' }}>
-            {deltaPositive ? '↑' : '↓'} {Math.abs(delta).toFixed(1)}%
+      {/* Top stat cards — wrapped in a gradient container for the "wow" feel */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--brand-tint), rgba(255,224,138,0.15))',
+        borderRadius: 16,
+        padding: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="clean-card" style={{ padding: 14 }}>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'this_month')}</div>
+            <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink-900)' }}>{formatINR(thisMonth.amount)}</div>
+            <div className="tabular" style={{ fontSize: 11, color: 'var(--brand-700)', marginTop: 2 }}>{thisMonth.liters.toFixed(1)}L • {t(lang, 'paid_amount')} {formatINR(thisMonth.paid)}</div>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 2 }}>
-            {deltaPositive ? '+' : ''}{formatINR(thisMonth.amount - lastMonth.amount)}
+          <div className="clean-card" style={{ padding: 14 }}>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'last_month')}</div>
+            <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink-700)' }}>{formatINR(lastMonth.amount)}</div>
+            <div className="tabular" style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 2 }}>{lastMonth.liters.toFixed(1)}L</div>
           </div>
         </div>
-        <div className="clean-card" style={{ padding: 14 }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'collection_rate')}</div>
-          <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: collectionRate >= 80 ? 'var(--brand-700)' : collectionRate >= 50 ? 'var(--amber)' : 'var(--red)' }}>
-            {collectionRate.toFixed(0)}%
-          </div>
-          <div style={{ height: 4, background: 'var(--muted)', borderRadius: 2, marginTop: 6, overflow: 'hidden' }}>
-            <div style={{ width: `${collectionRate}%`, height: '100%', background: 'var(--brand-600)', borderRadius: 2 }} />
-          </div>
-        </div>
-      </div>
 
-      {/* Month-end + grace countdowns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <div className="clean-card" style={{ padding: 14, background: 'var(--amber-tint)', border: '1px solid rgba(245,166,35,0.22)' }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'month_end_countdown')}</div>
-          <div className="tabular" style={{ fontSize: 18, fontWeight: 700, color: 'var(--amber)' }}>
-            {t(lang, 'days_left', { n: String(monthEndCountdown.daysLeft) })}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="clean-card" style={{ padding: 14 }}>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'delta')}</div>
+            <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: deltaPositive ? 'var(--brand-700)' : 'var(--red)' }}>
+              {deltaPositive ? '↑' : '↓'} {Math.abs(delta).toFixed(1)}%
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 2 }}>
+              {deltaPositive ? '+' : ''}{formatINR(thisMonth.amount - lastMonth.amount)}
+            </div>
+          </div>
+          <div className="clean-card" style={{ padding: 14 }}>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'collection_rate')}</div>
+            <div className="tabular" style={{ fontSize: 20, fontWeight: 700, color: collectionRate >= 80 ? 'var(--brand-700)' : collectionRate >= 50 ? 'var(--amber)' : 'var(--red)' }}>
+              {collectionRate.toFixed(0)}%
+            </div>
+            <div style={{ height: 4, background: 'var(--muted)', borderRadius: 2, marginTop: 6, overflow: 'hidden' }}>
+              <div style={{ width: `${collectionRate}%`, height: '100%', background: 'var(--brand-600)', borderRadius: 2 }} />
+            </div>
           </div>
         </div>
-        <div className="clean-card" style={{ padding: 14, background: 'var(--red-tint)', border: '1px solid rgba(220,38,38,0.18)' }}>
-          <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'grace_countdown')}</div>
-          <div className="tabular" style={{ fontSize: 18, fontWeight: 700, color: 'var(--red)' }}>
-            {t(lang, 'days_left', { n: String(graceCountdown.daysLeft) })}
+
+        {/* Month-end + grace countdowns inside the gradient container */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="clean-card" style={{ padding: 14, background: 'var(--amber-tint)', border: '1px solid rgba(245,166,35,0.22)' }}>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'month_end_countdown')}</div>
+            <div className="tabular" style={{ fontSize: 18, fontWeight: 700, color: 'var(--amber)' }}>
+              {t(lang, 'days_left', { n: String(monthEndCountdown.daysLeft) })}
+            </div>
+          </div>
+          <div className="clean-card" style={{ padding: 14, background: 'var(--red-tint)', border: '1px solid rgba(220,38,38,0.18)' }}>
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginBottom: 4 }}>{t(lang, 'grace_countdown')}</div>
+            <div className="tabular" style={{ fontSize: 18, fontWeight: 700, color: 'var(--red)' }}>
+              {t(lang, 'days_left', { n: String(graceCountdown.daysLeft) })}
+            </div>
           </div>
         </div>
       </div>

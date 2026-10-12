@@ -34,19 +34,14 @@ export default function Home() {
           setView('intro');
           return;
         }
+        const settingsData = await res.json();
+        const bid = settingsData?.business?.id || '';
+        const businessName = settingsData?.business?.businessName || 'Owner';
         // We have a session — find out what role
         const userRes = await fetch('/api/dashboard', { cache: 'no-store' });
         if (userRes.ok) {
-          // Owner or staff — fetch minimal session shape via owners list
-          const ownersRes = await fetch('/api/owners', { cache: 'no-store' });
-          let name = 'Owner';
-          let bid = '';
-          if (ownersRes.ok) {
-            const d = await ownersRes.json();
-            // The current user is whoever — we can't tell precisely from this list
-            // but we know the role is owner/staff from /api/dashboard returning 200
-          }
-          setSession({ role: 'owner', name, bid, phone: '' });
+          // Owner or staff
+          setSession({ role: 'owner', name: businessName, bid, phone: '' });
           setView('owner_today');
         } else {
           const custRes = await fetch('/api/customer', { cache: 'no-store' });
@@ -55,7 +50,7 @@ export default function Home() {
             setSession({
               role: 'customer',
               name: cd.customer?.name || 'Customer',
-              bid: '',
+              bid: cd.customer?.id ? (await (await fetch(`/api/business/public-branding?businessId=${bid}`)).json()).businessId : bid,
               cid: cd.customer?.id,
               phone: cd.customer?.phone || '',
             });

@@ -1,9 +1,10 @@
-// Owner — Settings: General, Language, Staff Mgmt, WhatsApp Templates, Logout
+// Owner — Settings: Branding, General, Language, Staff Mgmt, WhatsApp Templates, Logout
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { FooterCredit } from '../FooterCredit';
+import { NexoryosLogo } from '../Brand';
 
 interface SettingsResp {
   settings?: {
@@ -24,6 +25,18 @@ interface SettingsResp {
     upiId?: string | null;
   } | null;
 }
+interface BrandingResp {
+  business?: {
+    id: string;
+    businessName: string;
+    upiId?: string | null;
+    logoUrl?: string | null;
+    themeColor?: string | null;
+    themeColorDark?: string | null;
+    tagline?: string | null;
+    accentEmoji?: string | null;
+  } | null;
+}
 interface OwnerUser {
   id: string;
   name: string;
@@ -32,6 +45,15 @@ interface OwnerUser {
   active: boolean;
   isSuper: boolean;
 }
+
+const PRESET_COLORS: { hex: string; key: string }[] = [
+  { hex: '#0B7A4B', key: 'color_dairy_green' },
+  { hex: '#1E88E5', key: 'color_milky_blue' },
+  { hex: '#FF8F00', key: 'color_buttery_amber' },
+  { hex: '#8E24AA', key: 'color_grape' },
+  { hex: '#E53935', key: 'color_tomato' },
+  { hex: '#00897B', key: 'color_teal' },
+];
 
 export function OwnerSettingsScreen() {
   const lang = useApp(s => s.lang);
@@ -45,6 +67,17 @@ export function OwnerSettingsScreen() {
   const [users, setUsers] = useState<OwnerUser[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Branding
+  const [bBusinessName, setBBusinessName] = useState('');
+  const [tagline, setTagline] = useState('');
+  const [accentEmoji, setAccentEmoji] = useState('🐄');
+  const [themeColor, setThemeColor] = useState('#0B7A4B');
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [savingBranding, setSavingBranding] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // General
   const [businessName, setBusinessName] = useState('');
   const [billingCycleDay, setBillingCycleDay] = useState('1');
   const [graceDays, setGraceDays] = useState('10');
@@ -60,9 +93,10 @@ export function OwnerSettingsScreen() {
   const load = async () => {
     setLoading(true);
     try {
-      const [sRes, uRes] = await Promise.all([
+      const [sRes, uRes, bRes] = await Promise.all([
         fetch('/api/settings'),
         session?.role === 'owner' ? fetch('/api/owners') : Promise.resolve(null),
+        session?.role === 'owner' ? fetch('/api/business/branding') : Promise.resolve(null),
       ]);
       if (sRes.ok) {
         const d: SettingsResp = await sRes.json();
@@ -80,6 +114,16 @@ export function OwnerSettingsScreen() {
       if (uRes && uRes.ok) {
         const d = await uRes.json();
         setUsers(d.users || []);
+      }
+      if (bRes && bRes.ok) {
+        const bd: BrandingResp = await bRes.json();
+        if (bd.business) {
+          setBBusinessName(bd.business.businessName || '');
+          setTagline(bd.business.tagline || '');
+          setAccentEmoji(bd.business.accentEmoji || '🐄');
+          setThemeColor(bd.business.themeColor || '#0B7A4B');
+          setLogoUrl(bd.business.logoUrl || null);
+        }
       }
     } finally {
       setLoading(false);
@@ -105,6 +149,64 @@ export function OwnerSettingsScreen() {
     }
   };
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLogoError(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setLogoError(t(lang, 'logo_too_big'));
+      return;
+    }
+    if (file.size > 200 * 1024) {
+      setLogoError(t(lang, 'logo_too_big'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setLogoUrl(typeof reader.result === 'string' ? reader.result : null);
+    };
+    reader.onerror = () => setLogoError(t(lang, 'error'));
+    reader.readAsDataURL(file);
+  };
+
+  const saveBranding = async () => {
+    setSavingBranding(true);
+    try {
+      const res = await fetch('/api/business/branding', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          businessName: bBusinessName,
+          tagline,
+          accentEmoji: accentEmoji.slice(0, 4),
+          themeColor,
+          logoUrl,
+        }),
+      });
+      if (!res.ok) {
+        pushToast({ text: t(lang, 'error') });
+        setSavingBranding(false);
+        return;
+      }
+      pushToast({ text: t(lang, 't_branding_saved') });
+      // Apply theme locally for instant feedback
+      try {
+        const { applyTheme } = await import('../DynamicTheme');
+        applyTheme(themeColor, undefined);
+      } catch {}
+      // Dispatch event so DynamicTheme (mounted in OwnerApp) refetches
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('shopm:branding-updated'));
+      }
+      // Reload branding info so all UI is consistent
+      await load();
+    } catch {
+      pushToast({ text: t(lang, 'error') });
+    } finally {
+      setSavingBranding(false);
+    }
+  };
+
   const logout = async () => {
     try {
       await fetch('/api/logout', { method: 'POST' });
@@ -126,6 +228,139 @@ export function OwnerSettingsScreen() {
 
   return (
     <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, minHeight: '100%' }}>
+      {/* Branding */}
+      {session?.role === 'owner' && (
+        <Section title={t(lang, 'settings_branding')}>
+          {/* Live preview */}
+          <div style={{
+            background: 'linear-gradient(135deg, var(--brand-tint), rgba(255,224,138,0.18))',
+            borderRadius: 12,
+            padding: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            border: '1px solid var(--border)',
+          }}>
+            {logoUrl ? (
+              <img src={logoUrl} alt="logo" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', background: '#fff' }} />
+            ) : (
+              <NexoryosLogo size={48} />
+            )}
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {accentEmoji ? `${accentEmoji} ` : ''}{bBusinessName || t(lang, 'app_name')}
+              </div>
+              {tagline && (
+                <div style={{ fontSize: 11, color: 'var(--ink-500)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tagline}</div>
+              )}
+              <div style={{ fontSize: 10, color: 'var(--brand-700)', marginTop: 2 }}>{t(lang, 'live_preview')}</div>
+            </div>
+          </div>
+
+          <Field label={t(lang, 'business_name')}>
+            <input value={bBusinessName} onChange={e => setBBusinessName(e.target.value)} style={inputStyle} className="clean-btn motion-fast" />
+          </Field>
+          <Field label={t(lang, 'tagline')}>
+            <input value={tagline} onChange={e => setTagline(e.target.value)} placeholder={t(lang, 'tagline_placeholder')} style={inputStyle} className="clean-btn motion-fast" />
+          </Field>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <Field label={t(lang, 'accent_emoji')}>
+              <input value={accentEmoji} onChange={e => setAccentEmoji(e.target.value.slice(0, 4))} placeholder="🐄" maxLength={4} style={{ ...inputStyle, textAlign: 'center' }} className="clean-btn motion-fast" />
+            </Field>
+            <Field label={t(lang, 'theme_color')}>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', minHeight: 48 }}>
+                <input
+                  type="color"
+                  value={themeColor}
+                  onChange={e => setThemeColor(e.target.value)}
+                  aria-label={t(lang, 'theme_color')}
+                  style={{ width: 48, height: 48, padding: 0, border: '1px solid var(--border)', borderRadius: 10, background: 'var(--bg)', cursor: 'pointer' }}
+                />
+                <input
+                  type="text"
+                  value={themeColor}
+                  onChange={e => setThemeColor(e.target.value)}
+                  maxLength={7}
+                  className="tabular"
+                  style={{ ...inputStyle, flex: 1, fontWeight: 600 }}
+                />
+              </div>
+            </Field>
+          </div>
+
+          {/* Preset color swatches */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+            {PRESET_COLORS.map(c => (
+              <button
+                key={c.hex}
+                onClick={() => setThemeColor(c.hex)}
+                className="motion-fast"
+                title={t(lang, c.key)}
+                aria-label={t(lang, c.key)}
+                style={{
+                  height: 40,
+                  borderRadius: 10,
+                  background: c.hex,
+                  border: themeColor.toLowerCase() === c.hex.toLowerCase() ? '2px solid var(--ink-900)' : '1px solid var(--border)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                }}
+              >
+                {themeColor.toLowerCase() === c.hex.toLowerCase() && (
+                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14 }}>✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Logo upload */}
+          <Field label={t(lang, 'logo_upload')}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoChange}
+              style={{ display: 'none' }}
+            />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {logoUrl ? (
+                <img src={logoUrl} alt="logo preview" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', border: '1px solid var(--border)', background: '#fff' }} />
+              ) : (
+                <div style={{ width: 48, height: 48, borderRadius: 10, border: '1px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-500)', fontSize: 22, background: 'var(--bg)' }}>🖼️</div>
+              )}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="clean-btn motion-fast"
+                style={{ flex: 1, background: 'var(--bg)', color: 'var(--ink-700)', border: '1px solid var(--border)', fontSize: 13 }}
+              >
+                📁 {t(lang, 'logo_upload')}
+              </button>
+              {logoUrl && (
+                <button
+                  onClick={() => setLogoUrl(null)}
+                  className="clean-btn motion-fast"
+                  style={{ background: 'var(--red-tint)', color: 'var(--red)', border: '1px solid rgba(220,38,38,0.22)', fontSize: 13, padding: '0 14px' }}
+                  aria-label="clear logo"
+                >✕</button>
+              )}
+            </div>
+            {logoError && (
+              <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{logoError}</div>
+            )}
+            <div style={{ fontSize: 10, color: 'var(--ink-500)', marginTop: 2 }}>Max 200KB · PNG/SVG/JPG</div>
+          </Field>
+
+          <button
+            onClick={saveBranding}
+            disabled={savingBranding}
+            className="clean-btn motion-fast"
+            style={{ marginTop: 4, background: 'var(--brand-600)', color: '#fff', border: 'none' }}
+          >
+            {savingBranding ? '...' : t(lang, 'save')}
+          </button>
+        </Section>
+      )}
+
       {/* General */}
       <Section title={t(lang, 'settings_general')}>
         <Field label={t(lang, 'business_name')}>

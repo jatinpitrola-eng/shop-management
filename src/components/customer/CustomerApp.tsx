@@ -6,6 +6,9 @@ import { NexoryosLogo } from '../Brand';
 import { FooterCredit } from '../FooterCredit';
 import { OfflineBanner } from '../OfflineBanner';
 import { Toasts } from '../Toasts';
+import { DairyBackground } from '../DairyBackground';
+import { DynamicTheme } from '../DynamicTheme';
+import { CuteCow } from '../CuteCow';
 import { CustHomeScreen } from './CustHomeScreen';
 import { CustKhataScreen } from './CustKhataScreen';
 import { CustPayScreen } from './CustPayScreen';
@@ -27,11 +30,20 @@ export function CustomerApp() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #F6F8F7 0%, #EAF5EE 60%, #F6F8F7 100%)',
+      display: 'flex', flexDirection: 'column',
+      position: 'relative',
+    }}>
+      <DynamicTheme businessId={session?.bid} />
+      <DairyBackground density={5} />
+
       {/* Header */}
       <header
         style={{
-          position: 'sticky', top: 0, zIndex: 30, background: 'var(--surface)',
+          position: 'sticky', top: 0, zIndex: 30,
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
           borderBottom: '1px solid var(--border)', padding: '10px 14px',
           paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
@@ -57,7 +69,7 @@ export function CustomerApp() {
 
       <OfflineBanner />
 
-      <main style={{ flex: 1, paddingBottom: 80 }}>
+      <main style={{ flex: 1, paddingBottom: 80, position: 'relative', zIndex: 1 }}>
         {view === 'cust_home' && <CustHomeScreen />}
         {view === 'cust_khata' && <CustKhataScreen />}
         {view === 'cust_pay' && <CustPayScreen />}
@@ -69,7 +81,7 @@ export function CustomerApp() {
       <Toasts />
 
       {/* Bottom nav */}
-      <nav className="sticky-bottom" style={{ display: 'flex', borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
+      <nav className="sticky-bottom" style={{ display: 'flex', borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)' }}>
         {tabs.map(tb => (
           <button
             key={tb.id}
