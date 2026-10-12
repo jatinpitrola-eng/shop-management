@@ -5,7 +5,7 @@ import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { istDate, formatINR } from '@/lib/dates';
 import { v4 as uuidv4 } from 'uuid';
-import { Cow3D } from '../Cow3D';
+import { RealCow } from '../RealCow';
 import { triggerMilkSplash } from '../MilkSplash';
 
 interface Entry {
@@ -211,9 +211,9 @@ export function OwnerTodayScreen() {
 
   return (
     <div style={{ padding: '14px', position: 'relative' }}>
-      {/* Floating 3D cow on the right — doesn't push the layout */}
-      <div style={{ position: 'absolute', top: 12, right: 14, opacity: 0.95, pointerEvents: 'none', zIndex: 2 }}>
-        <Cow3D size={72} parallax={false} sparkles={false} milkDrop />
+      {/* Real cow on the right — soft parallax, breathing */}
+      <div style={{ position: 'absolute', top: 10, right: 14, opacity: 0.95, pointerEvents: 'none', zIndex: 2 }}>
+        <RealCow size={84} parallax={false} />
       </div>
       {/* Extra milk drop floating around the cow */}
       <motion.div

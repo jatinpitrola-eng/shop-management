@@ -276,3 +276,73 @@ Test logins (unchanged from v2):
 - Customer: patel@demo.com / 1234
 
 9 verification screenshots in /home/z/my-project/download/ (v3-01 through v3-09)
+
+---
+Task ID: 6
+Agent: main (parent)
+Task: REALISTIC premium dairy theme — AI-generated real cow photo, serif typography, elegant easing (no cartoon)
+
+Work Log:
+- Generated 6 realistic dairy images via z-ai image CLI:
+  * real-cow.png — Jersey dairy cow head, golden hour lighting, premium product photography
+  * milk-splash.png — high-speed splash photography
+  * milk-pour.png — milk pouring from bottle
+  * farm-bg.png — blurred dairy farm sunrise
+  * cream-texture.png — soft luxurious cream background
+  * milk-bottle.png — vintage glass milk bottle
+- Installed @fontsource/playfair-display + @fontsource/cormorant-garamond (serif display fonts)
+- Updated layout.tsx — Playfair Display (700/800) for headings, Cormorant Garamond (italic) for accent text, Inter for body
+- Rewrote globals.css with REALISTIC premium theme:
+  * Warm earthy palette: bg #F4EEE2 (warm cream), ink-900 #1F1A12 (deep espresso), brand-600 #0F5132 (deep forest green), butter #D4A24E (warm gold), chocolate #5A3A1E, caramel #B97A2E
+  * Multi-layer soft depth shadows (no harsh cartoon shadow-card-3d)
+  * Glass-morphism utilities (.glass, .glass-strong) with backdrop-blur 20px saturate 180%
+  * SMOOTH ELEGANT EASING (NOT bouncy cartoon springs): cubic-bezier(.4, 0, .2, 1) and cubic-bezier(.16, 1, .3, 1) for natural premium motion
+  * Animations: breathe (slow 5s cow breathing), float-slow (12s background drift), ken-burns (cinematic zoom), fade-in (700ms)
+  * Removed all .motion-spring bouncy classes, replaced with .motion-fast / .motion-smooth / .motion-elegant
+  * Footer credit uses Cormorant Garamond italic for premium feel
+- Built RealCow.tsx — uses AI-generated real cow photograph with:
+  * Slow elegant parallax (low stiffness 40, damping 20 — smooth, not bouncy)
+  * Breathing animation (5s cycle, scale 1.012 + translateY -3px)
+  * Soft glow halo behind (radial gradient + blur 20px)
+  * Slow blink overlay (every 5-7s, subtle dark sweep)
+  * Elegant gold sparkle + white sparkle floating
+  * Smooth fade-in with blur (logo-pulse 900ms)
+- Built RealisticDairyBackground.tsx:
+  * Cream gradient backdrop
+  * Optional farm-bg image (very blurred, 24px blur) for atmospheric depth
+  * Cream texture overlay (soft-light blend mode) for subtle luxury feel
+  * Soft radial highlights (3 stops)
+  * Pouring milk image at top (optional, on intro)
+  * Floating real milk drops (CSS-based, gradient + shadow)
+  * Tiny gold/cream particles (slow 14-22s drift)
+  * Cinematic vignette at edges
+- Updated IntroScreen — RealCow (size 220), RealisticDairyBackground with pourMilk, Cormorant Garamond italic text, Playfair Display headings, elegant progress LINES (not dots), 1.4s+1.8s timing (slower, more elegant)
+- Updated LoginScreen — RealCow (size 64) in header, RealisticDairyBackground, Cormorant Garamond italic subtitles, glass tab switcher with smooth 300ms easing, glass inputs with backdrop-blur 12px
+- Updated OwnerApp.tsx — RealisticDairyBackground, Playfair Display header text, Cormorant Garamond italic for session name, all transitions use cubic-bezier(.4, 0, .2, 1) (350ms)
+- Updated customer/CustomerApp.tsx — same premium realistic theme
+- Updated OwnerTodayScreen — RealCow size 84 (top-right, parallax off), all motion.button transitions use smooth easing (not spring)
+- Updated OwnerDashboardScreen — RealCow size 160 (full parallax, slow elegant head tilt on mouse move)
+
+Verification (agent-browser end-to-end, fresh state):
+- Intro: RealCow image (photo of real cow) renders with slow fade-in + breathing, cream gradient bg + pouring milk at top, Playfair Display heading "Shop Management", Cormorant Garamond italic "by Nexoryos" ✓
+- Login: RealCow size 64 in top-left, glass tabs, smooth transitions between phone/email tabs ✓
+- Owner login via OTP → Today screen with RealCow top-right + glass header + Playfair Display "Shop Management" + uppercase "BY NEXORYOS" + Cormorant Garamond italic "Raju" ✓
+- Tap [1L] on Anita Ben → MILK SPLASH at tap location (still works) + Undo toast ✓
+- Dashboard → RealCow size 160 with full parallax (cow head follows mouse) ✓
+- Customer email login (patel@demo.com / 1234) → customer app with same premium realistic theme ✓
+
+Lint: `bun run lint` — 0 errors, 0 warnings (clean)
+
+8 verification screenshots in /home/z/my-project/download/ (v4-01 through v4-08):
+- v4-01 intro real cow (logo phase)
+- v4-02 intro real cow (slides phase)
+- v4-03 login real cow
+- v4-04 owner today with real cow
+- v4-05 milk splash on 1L tap
+- v4-06 dashboard with real cow
+- v4-07 customer app premium theme
+- v4-08 mobile viewport
+
+Test logins (unchanged):
+- Owner: +91 98765 43210 OTP 123456
+- Customer: patel@demo.com / 1234

@@ -1,4 +1,4 @@
-// Owner app shell — premium 3D theme with glass-morphism, page transitions, milk splash
+// Owner app shell — premium realistic dairy theme
 'use client';
 import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
@@ -6,7 +6,7 @@ import { NexoryosLogo } from './Brand';
 import { FooterCredit } from './FooterCredit';
 import { OfflineBanner } from './OfflineBanner';
 import { Toasts } from './Toasts';
-import { DairyBackground3D } from './DairyBackground3D';
+import { RealisticDairyBackground } from './RealisticDairyBackground';
 import { DynamicTheme } from './DynamicTheme';
 import { GlobalMilkSplashLayer } from './MilkSplash';
 import { PageTransition } from './PageTransition';
@@ -48,7 +48,7 @@ export function OwnerApp() {
       }}
     >
       <DynamicTheme businessId={session?.bid} />
-      <DairyBackground3D density={5} variant="cream" />
+      <RealisticDairyBackground variant="cream" density={4} />
       <GlobalMilkSplashLayer />
 
       {/* Top header — glass */}
@@ -59,33 +59,37 @@ export function OwnerApp() {
           top: 0,
           zIndex: 30,
           borderBottom: '1px solid rgba(255,255,255,0.5)',
-          padding: '12px 16px',
-          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+          padding: '14px 18px',
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 14px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 10,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <NexoryosLogo size={32} />
           <div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink-900)', lineHeight: 1.1, letterSpacing: '-0.01em' }}>{t(lang, 'app_name')}</div>
-            <div style={{ fontSize: 10, color: 'var(--ink-500)', opacity: 0.7, letterSpacing: '0.06em' }}>{t(lang, 'by_nexoryos')}</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink-900)', lineHeight: 1.1, letterSpacing: '-0.015em', fontFamily: 'Playfair Display, Georgia, serif' }}>
+              {t(lang, 'app_name')}
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--ink-500)', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 2 }}>
+              {t(lang, 'by_nexoryos')}
+            </div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-          <span style={{ color: 'var(--ink-500)' }}>{session?.name}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12 }}>
+          <span style={{ color: 'var(--ink-500)', fontStyle: 'italic', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: 14 }}>{session?.name}</span>
           <span style={{
             padding: '3px 10px',
             background: session?.role === 'owner' ? 'var(--brand-tint)' : 'var(--amber-tint)',
             color: session?.role === 'owner' ? 'var(--brand-700)' : 'var(--amber)',
             borderRadius: 10,
-            fontSize: 10,
+            fontSize: 9,
             fontWeight: 700,
             textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            border: session?.role === 'owner' ? '1px solid rgba(11,122,75,0.18)' : '1px solid rgba(245,166,35,0.22)',
+            letterSpacing: '0.1em',
+            border: session?.role === 'owner' ? '1px solid rgba(15,81,50,0.18)' : '1px solid rgba(212,162,78,0.22)',
           }}>
             {session?.role}
           </span>
@@ -111,7 +115,7 @@ export function OwnerApp() {
 
       <Toasts />
 
-      {/* Bottom nav — glass with subtle bounce on active */}
+      {/* Bottom nav — glass with subtle elegant motion */}
       <nav
         className="glass-strong"
         style={{
@@ -124,26 +128,27 @@ export function OwnerApp() {
           <button
             key={tb.id}
             onClick={() => setView(tb.id as any)}
-            className="motion-spring"
             style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 2,
-              padding: '8px 4px',
+              gap: 3,
+              padding: '10px 4px',
               background: view === tb.id ? 'var(--brand-tint)' : 'transparent',
               color: view === tb.id ? 'var(--brand-700)' : 'var(--ink-500)',
               border: 'none',
-              borderBottom: view === tb.id ? '3px solid var(--brand-600)' : '3px solid transparent',
+              borderBottom: view === tb.id ? '2px solid var(--brand-600)' : '2px solid transparent',
               fontSize: 10,
               fontWeight: 600,
               cursor: 'pointer',
               minHeight: 58,
+              transition: 'all 350ms cubic-bezier(.4, 0, .2, 1)',
               transform: view === tb.id ? 'translateY(-2px)' : 'translateY(0)',
+              letterSpacing: '0.02em',
             }}
           >
-            <span style={{ fontSize: 20, transform: view === tb.id ? 'scale(1.1)' : 'scale(1)', transition: 'transform 250ms cubic-bezier(.34,1.56,.64,1)' }}>{tb.icon}</span>
+            <span style={{ fontSize: 18, transition: 'transform 350ms cubic-bezier(.4, 0, .2, 1)', transform: view === tb.id ? 'scale(1.08)' : 'scale(1)' }}>{tb.icon}</span>
             <span style={{ fontSize: 10 }}>{tb.label}</span>
           </button>
         ))}

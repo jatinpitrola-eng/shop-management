@@ -5,7 +5,7 @@ import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { formatINR, currentMonth } from '@/lib/dates';
 import { FooterCredit } from '../FooterCredit';
-import { Cow3D } from '../Cow3D';
+import { RealCow } from '../RealCow';
 
 interface DashboardResp {
   thisMonth: { amount: number; liters: number; paid: number };
@@ -60,7 +60,7 @@ export function OwnerDashboardScreen() {
     <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, minHeight: '100%' }}>
       {/* Hero mascot */}
       <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
-        <Cow3D size={120} parallax sparkles milkDrop />
+        <RealCow size={160} parallax />
       </div>
 
       {/* Top stat cards — wrapped in a gradient container for the "wow" feel */}

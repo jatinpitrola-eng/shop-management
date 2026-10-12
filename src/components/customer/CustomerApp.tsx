@@ -1,4 +1,4 @@
-// Customer App shell — premium 3D theme with glass-morphism, page transitions
+// Customer App shell — premium realistic dairy theme
 'use client';
 import { useApp } from '@/lib/store';
 import { t } from '@/lib/i18n';
@@ -6,7 +6,7 @@ import { NexoryosLogo } from '../Brand';
 import { FooterCredit } from '../FooterCredit';
 import { OfflineBanner } from '../OfflineBanner';
 import { Toasts } from '../Toasts';
-import { DairyBackground3D } from '../DairyBackground3D';
+import { RealisticDairyBackground } from '../RealisticDairyBackground';
 import { DynamicTheme } from '../DynamicTheme';
 import { GlobalMilkSplashLayer } from '../MilkSplash';
 import { PageTransition } from '../PageTransition';
@@ -38,7 +38,7 @@ export function CustomerApp() {
       position: 'relative',
     }}>
       <DynamicTheme businessId={session?.bid} />
-      <DairyBackground3D density={4} variant="cream" />
+      <RealisticDairyBackground variant="cream" density={3} />
       <GlobalMilkSplashLayer />
 
       {/* Header — glass */}
@@ -47,25 +47,27 @@ export function CustomerApp() {
         style={{
           position: 'sticky', top: 0, zIndex: 30,
           borderBottom: '1px solid rgba(255,255,255,0.5)',
-          padding: '12px 16px',
-          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+          padding: '14px 18px',
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 14px)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           <NexoryosLogo size={30} />
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-900)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.01em' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink-900)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.015em', fontFamily: 'Playfair Display, Georgia, serif' }}>
               {session?.name}
             </div>
-            <div style={{ fontSize: 10, color: 'var(--ink-500)', opacity: 0.7, letterSpacing: '0.06em' }}>{t(lang, 'by_nexoryos')}</div>
+            <div style={{ fontSize: 9, color: 'var(--ink-500)', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase' }}>
+              {t(lang, 'by_nexoryos')}
+            </div>
           </div>
         </div>
         <span style={{
-          padding: '4px 10px', borderRadius: 10, fontSize: 10, fontWeight: 700,
+          padding: '4px 10px', borderRadius: 10, fontSize: 9, fontWeight: 700,
           background: 'var(--blue-tint)', color: 'var(--blue)',
-          letterSpacing: '0.05em', textTransform: 'uppercase',
-          border: '1px solid rgba(37,99,235,0.18)',
+          letterSpacing: '0.1em', textTransform: 'uppercase',
+          border: '1px solid rgba(30,90,153,0.18)',
         }} title={t(lang, 'cust_no_edit_dispute_shield')}>
           🔒 read-only
         </span>
@@ -98,19 +100,20 @@ export function CustomerApp() {
           <button
             key={tb.id}
             onClick={() => setView(tb.id as any)}
-            className="motion-spring"
             style={{
-              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-              padding: '8px 4px',
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+              padding: '10px 4px',
               background: view === tb.id ? 'var(--brand-tint)' : 'transparent',
               color: view === tb.id ? 'var(--brand-700)' : 'var(--ink-500)',
               border: 'none',
-              borderBottom: view === tb.id ? '3px solid var(--brand-600)' : '3px solid transparent',
+              borderBottom: view === tb.id ? '2px solid var(--brand-600)' : '2px solid transparent',
               fontSize: 10, fontWeight: 600, cursor: 'pointer', minHeight: 58,
+              transition: 'all 350ms cubic-bezier(.4, 0, .2, 1)',
               transform: view === tb.id ? 'translateY(-2px)' : 'translateY(0)',
+              letterSpacing: '0.02em',
             }}
           >
-            <span style={{ fontSize: 20, transform: view === tb.id ? 'scale(1.1)' : 'scale(1)', transition: 'transform 250ms cubic-bezier(.34,1.56,.64,1)' }}>{tb.icon}</span>
+            <span style={{ fontSize: 18, transition: 'transform 350ms cubic-bezier(.4, 0, .2, 1)', transform: view === tb.id ? 'scale(1.08)' : 'scale(1)' }}>{tb.icon}</span>
             <span style={{ fontSize: 10 }}>{tb.label}</span>
           </button>
         ))}
