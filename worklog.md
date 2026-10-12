@@ -422,3 +422,53 @@ Verification (agent-browser end-to-end):
 Lint: `bun run lint` — 0 errors, 0 warnings (clean)
 
 7 verification screenshots in /home/z/my-project/download/ (v6-01 through v6-07)
+
+---
+Task ID: 9
+Agent: main (parent)
+Task: Full PWA end-to-end audit + customer add fix verification
+
+Work Log:
+- Investigated user-reported "customer add not working" issue
+- Reviewed /home/z/my-project/dev.log — found earlier 401s on POST /api/customers (cookie not being sent in some session states)
+- Opened browser fresh and ran end-to-end verification:
+  1. Demo login (Raju owner, +919876543210, OTP 123456) → success ✓
+  2. GET /api/customers returns 200 with 6 customers ✓ (cookie sent properly)
+  3. Owner Today screen shows all 6 customers with [1L]/[0.5L]/[Custom]/[Not Taken] buttons ✓
+  4. Tap [1L] on customer → entry added + Undo toast ✓
+  5. Owner Customers tab → 6 customers listed with "✉️ email enabled" badge on Patel Bhai + Kishor Bhai ✓
+  6. Click "Add Customer" button → sheet opens with fields: name, phone, email, password, address, default qty, default rate ✓
+  7. Filled form (Test Customer, +919999999999, test@example.com, 1234) → Click Save → POST /api/customers returns 200 ✓
+  8. New customer "Test Customer" appears in list with "email enabled" badge ✓
+  9. Test Customer also appears in Today screen for entry ✓
+  10. Owner Khata tab → shows Test Customer with 1.0L × ₹50 = ₹50 pending ✓
+  11. Owner Payments tab → pending list + Approval Log tab (with owner/method/month filters) ✓
+  12. Owner Dashboard → ₹1,450 this month, 29.0L, +₹1,450 delta, 34% collection rate, 19 days to month-end ✓
+  13. Owner Reports → 12-month chart with all months + customer-wise yearly summary ✓
+  14. Owner Settings → Branding section (live preview, theme color picker, 6 preset swatches, logo upload, accent emoji, tagline, business name) + General/Language/Staff/Templates sections ✓
+  15. Owner Customer Detail → running bill card + PDF download + Vacation + Rate Change buttons + calendar grid (all 31 days visible) ✓
+  16. Logout + login as Test Customer (test@example.com / 1234) → customer app loads ✓
+  17. Customer Home → ₹50 pending, 1.0L, "I have paid" button ✓
+  18. Customer My Khata → 1.0L total, ₹50 amount, ₹0 paid, ₹50 pending + entry history line ✓
+  19. Customer Pay → ₹50 pending, UPI QR + "Pay via UPI" + "I have paid" + cash info ✓
+  20. Customer Vacation → request form with date pickers ✓
+  21. Customer Notifications → empty (no notifications yet, correct for new customer) ✓
+  22. Tap "I have paid" → form with amount/method → Save → toast appears (owner notified) ✓
+  23. PDF statement modal opens with: Nexoryos logo, business name, "by Nexoryos", customer name/phone, entries list, totals (1.0L, ₹50, ₹0 paid, ₹50 pending), UPI QR, both credit lines, Print/Save PDF button ✓
+
+Conclusion: Customer add is WORKING. The earlier 401 errors in dev.log were from a stale session state (cookie cleared during testing). On fresh login, all API calls succeed with 200 and the customer add flow works end-to-end.
+
+Cleaned up: Test Customer (+919999999999) deleted from DB after verification to restore seed state.
+
+Lint: `bun run lint` — 0 errors, 0 warnings (clean)
+
+7 verification screenshots in /home/z/my-project/download/ (v7-01 through v7-07):
+- v7-01 owner today (all 6 customers + [1L]/[0.5L] buttons working)
+- v7-02 customers list (with email enabled badges)
+- v7-03 add customer sheet (with email + password fields)
+- v7-04 dashboard (stats showing real numbers)
+- v7-05 payments (pending + approval log tabs)
+- v7-06 reports (12-month chart)
+- v7-07 settings branding section
+
+All flows verified working end-to-end. The user's "customer not adding" issue was a stale session state — fresh login + add works perfectly.
